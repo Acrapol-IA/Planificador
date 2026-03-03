@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACRAPOL · Planificación de Estudio</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #ffffff;
+  --bg2:     #f5f6f8;
+  --bg3:     #eceef2;
+  --bg4:     #e2e4ea;
+  --red:     #CD1619;
+  --red2:    #a81215;
+  --gold:    #d49c30;
+  --gold2:   #b8861e;
+  --green:   #16a34a;
+  --text:    #0f1117;
+  --text2:   #374151;
+  --muted:   #6b7280;
+  --dim:     #9ca3af;
+  --border:  rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; min-height: 100vh; font-size: 14px; }
+
+/* ═══ LOGIN SCREEN ═══ */
+.login-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: #f5f6f8;
+  align-items: center; justify-content: center;
+}
+.login-screen.active { display: flex; }
+.login-box {
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 40px 40px 32px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.login-logo { width: 64px; height: 64px; object-fit: contain; margin-bottom: 16px; }
+.login-title { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: var(--red); margin-bottom: 4px; }
+.login-sub { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+.login-label { display: block; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.login-input {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px;
+  font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--text);
+  margin-bottom: 16px; transition: border-color .15s;
+}
+.login-input:focus { outline: none; border-color: var(--red); background: #fff; }
+.login-err { font-size: 12px; color: var(--red); margin-bottom: 12px; min-height: 18px; }
+.login-btn {
+  width: 100%; padding: 11px; background: var(--red); color: #fff;
+  border: none; border-radius: 6px; font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: .3px;
+  transition: background .15s;
+}
+.login-btn:hover { background: var(--red2); }
+.login-back { margin-top: 14px; font-size: 12px; color: var(--muted); cursor: pointer; }
+.login-back:hover { color: var(--text); }
+
+/* ═══ ROLE PICKER ═══ */
+.role-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 999;
+  background: #f5f6f8;
+  align-items: center; justify-content: center;
+}
+.role-screen.active { display: flex; }
+.role-box {
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.role-logo { width: 64px; height: 64px; object-fit: contain; margin-bottom: 16px; }
+.role-title { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: var(--red); margin-bottom: 4px; }
+.role-sub { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; }
+.role-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.role-card {
+  border: 2px solid var(--border2); border-radius: 10px; padding: 24px 16px;
+  cursor: pointer; transition: all .18s; background: var(--bg2);
+}
+.role-card:hover { border-color: var(--red); background: #fff; box-shadow: 0 4px 16px rgba(205,22,25,.1); transform: translateY(-2px); }
+.role-icon { font-size: 32px; margin-bottom: 10px; }
+.role-name { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 1px; color: var(--text); margin-bottom: 4px; }
+.role-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ═══ HEADER ═══ */
+.site-header { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 0 32px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.header-brand { display: flex; align-items: center; gap: 16px; }
+.header-logo { width: 52px; height: 52px; object-fit: contain; }
+.header-divider { width: 1px; height: 36px; background: var(--border2); }
+.header-name { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 4px; color: var(--red); line-height: 1; }
+.header-sub { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-badge { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid rgba(205,22,25,0.25); border-radius: 4px; background: rgba(205,22,25,0.05); }
+.header-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.header-badge-text { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); }
+.header-promo-wrap { display: flex; align-items: center; gap: 6px; }
+.header-promo {
+  font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2);
+  background: transparent; border: none;
+  border-bottom: 1.5px dashed var(--border2);
+  padding: 2px 4px; min-width: 100px; transition: border-color .15s;
+}
+.header-promo:focus { outline: none; border-bottom-color: var(--red); color: var(--text); }
+.header-promo[readonly] { border-bottom-color: transparent; cursor: default; }
+.promo-icon { color: var(--dim); font-size: 12px; }
+.role-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all .15s;
+}
+.role-pill.admin { background: rgba(205,22,25,.08); color: var(--red); border: 1px solid rgba(205,22,25,.2); }
+.role-pill.admin:hover { background: rgba(205,22,25,.14); }
+.role-pill.student { background: var(--bg2); color: var(--muted); border: 1px solid var(--border2); }
+.role-pill.student:hover { background: var(--bg3); }
+
+/* ═══ HERO ═══ */
+.hero-strip { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 36px 32px; position: relative; overflow: hidden; }
+.hero-strip::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--red), var(--gold)); }
+.hero-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; position: relative; }
+.hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.hero-eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1.5px; background: var(--red); }
+.hero-title { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: clamp(26px, 3vw, 40px); letter-spacing: 1px; color: var(--text); line-height: 1.1; margin-bottom: 10px; }
+.hero-title span { color: var(--red); }
+.hero-desc { color: var(--muted); font-size: 14px; max-width: 460px; line-height: 1.6; }
+.hero-stats { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.hstat { background: var(--bg); padding: 16px 24px; text-align: center; min-width: 90px; }
+.hstat-num { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 28px; line-height: 1; margin-bottom: 4px; }
+.hstat-lbl { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.hstat.c .hstat-num { color: var(--red); }
+.hstat.p .hstat-num { color: var(--gold); }
+.hstat.d .hstat-num { color: var(--green); }
+.hstat.t .hstat-num { color: var(--text2); }
+
+/* ═══ LAYOUT ═══ */
+.main { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
+.section { margin-bottom: 24px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+.section-title { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.section-title::before { content: ''; width: 3px; height: 13px; background: var(--red); border-radius: 2px; }
+.panel { background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+/* ═══ SELECTOR ═══ */
+.selector-inner { padding: 20px 24px; display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+select {
+  background-color: var(--bg2); border: 1px solid var(--border2); border-radius: 6px;
+  color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 500;
+  padding: 9px 36px 9px 14px; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23CD1619' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; min-width: 240px; transition: border-color .2s;
+}
+select option { background: #fff; color: #0f1117; }
+select:focus { outline: none; border-color: var(--red); }
+
+/* ═══ BUTTONS ═══ */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 6px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .3px; cursor: pointer; transition: all .16s; border: none; white-space: nowrap; }
+.btn-red { background: var(--red); color: #fff; border: 1px solid var(--red2); }
+.btn-red:hover { background: var(--red2); box-shadow: 0 4px 12px rgba(205,22,25,.25); transform: translateY(-1px); }
+.btn-gold { background: var(--gold); color: #fff; border: 1px solid var(--gold2); }
+.btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: var(--bg2); }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 5px; }
+.btn-icon { padding: 5px; border-radius: 4px; background: transparent; border: 1px solid var(--border); color: var(--dim); cursor: pointer; transition: all .13s; display: inline-flex; align-items: center; justify-content: center; }
+.btn-icon:hover { border-color: var(--red); color: var(--red); background: rgba(205,22,25,.06); }
+.btn-icon.gold-ic:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,156,48,.08); }
+
+/* ═══ RECOVERY ═══ */
+.recovery-panel { background: #fffdf5; border: 1px solid rgba(212,156,48,.3); border-left: 3px solid var(--gold); border-radius: 8px; padding: 20px 24px; display: none; margin-bottom: 24px; }
+.recovery-panel.show { display: block; animation: fadeSlide .3s ease; }
+@keyframes fadeSlide { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+.recovery-title { font-family: 'Oswald', sans-serif; font-size: 15px; letter-spacing: 2px; font-weight: 600; color: var(--gold2); margin-bottom: 5px; }
+.recovery-desc { color: var(--muted); font-size: 13px; margin-bottom: 16px; line-height: 1.6; }
+.recovery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 16px; max-height: 260px; overflow-y: auto; }
+.recovery-item { background: #fff; border: 1px solid rgba(212,156,48,.2); border-radius: 6px; padding: 10px 12px; }
+.recovery-item strong { font-size: 12px; font-weight: 600; color: var(--gold2); display: block; margin-bottom: 4px; }
+.recovery-topics { font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+.recovery-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ═══ TABLE ═══ */
+.table-toolbar { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.table-toolbar-title { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); }
+.legend { display: flex; gap: 10px; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+.leg-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+thead th { background: var(--bg2); padding: 9px 14px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); text-align: left; border-bottom: 1px solid var(--border2); }
+thead th.center { text-align: center; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:hover { background: var(--bg2); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 9px 14px; font-size: 13px; vertical-align: middle; }
+td.center { text-align: center; }
+tr.row-current { background: #fff5f5 !important; border-left: 3px solid var(--red); }
+tr.row-current td:first-child { padding-left: 11px; }
+tr.row-past-done { background: #f0fdf4; }
+tr.row-past-pending { background: #fffbeb; }
+tr.row-future { opacity: .45; }
+.wk-name { font-weight: 600; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.wk-date { font-family: 'Source Code Pro', monospace; font-size: 11px; color: var(--muted); margin-top: 1px; }
+.now-pill { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--red); color: #fff; padding: 2px 7px; border-radius: 3px; animation: nowglow 2.5s ease-in-out infinite; }
+@keyframes nowglow { 0%,100%{box-shadow:0 0 0 rgba(205,22,25,0)} 50%{box-shadow:0 0 8px rgba(205,22,25,.45)} }
+.tag { display: inline-block; font-family: 'Source Code Pro', monospace; font-size: 11px; padding: 2px 7px; border-radius: 4px; margin: 1px; }
+.tag-e    { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.tag-r1   { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.tag-r2   { background: #fefce8; color: #713f12; border: 1px solid #fef08a; }
+.tag-libre{ background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-family: 'Source Sans 3', sans-serif; font-style: italic; }
+.tag-mod  { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+.tag-rec  { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; font-size: 10.5px; }
+.chk { width: 26px; height: 26px; border-radius: 5px; background: transparent; border: 1px solid var(--border2); color: var(--dim); cursor: pointer; transition: all .13s; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+.chk:hover { border-color: var(--green); color: var(--green); background: #f0fdf4; }
+.chk.on { background: #dcfce7; border-color: #16a34a; color: var(--green); }
+
+/* ═══ MODAL ═══ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
+.modal-overlay.open { display: flex; animation: mfade .18s ease; }
+@keyframes mfade { from{opacity:0} to{opacity:1} }
+.modal { background: #fff; border: 1px solid var(--border2); border-radius: 10px; width: 100%; max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,.15); }
+.modal-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 1.5px; color: var(--text); }
+.modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; transition: color .13s; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 22px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.form-input { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 14px; padding: 8px 11px; transition: border-color .14s; width: 100%; }
+.form-input:focus { outline: none; border-color: var(--red); background: #fff; }
+.form-input::placeholder { color: var(--dim); }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ═══ ADMIN BANNER ═══ */
+.admin-banner { background: #fff8f8; border-bottom: 1px solid rgba(205,22,25,.15); padding: 8px 32px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12px; color: var(--red); font-weight: 600; letter-spacing: .5px; }
+.admin-banner svg { flex-shrink: 0; }
+
+/* ═══ TOAST ═══ */
+.toast { position: fixed; bottom: 24px; right: 24px; background: #fff; border: 1px solid #bbf7d0; border-radius: 8px; padding: 13px 18px; font-size: 13px; font-weight: 500; color: var(--green); box-shadow: 0 8px 24px rgba(0,0,0,.1); z-index: 300; transform: translateX(120%); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.toast.show { transform: translateX(0); }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+@media(max-width:640px){
+  .header-inner { height: auto; padding: 12px 16px; flex-wrap: wrap; }
+  .hero-inner { flex-direction: column; align-items: flex-start; }
+  .hero-stats { width: 100%; }
+  .main { padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .hero-strip { padding: 24px 16px; }
+  .role-cards { grid-template-columns: 1fr; }
+}
+
+/* ═══ TAB NAV ═══ */
+.tab-nav {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.tab-btn {
+  padding: 14px 20px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: .3px;
+  color: var(--muted);
+  background: transparent; border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ═══ HORARIO ═══ */
+.horario-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
+.h-section { margin-bottom: 24px; }
+.h-panel { background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.h-panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.h-panel-title { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.h-panel-body { padding: 20px; }
+
+/* Stats bar */
+.h-stats { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+.h-stat { background: var(--bg); padding: 12px 20px; text-align: center; min-width: 80px; }
+.h-stat-num { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 24px; line-height: 1; }
+.h-stat-lbl { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.h-stat.hs .h-stat-num { color: var(--red); }
+.h-stat.he .h-stat-num { color: #2563eb; }
+.h-stat.ht .h-stat-num { color: #d97706; }
+.h-stat.hr .h-stat-num { color: var(--green); }
+.h-stat.hp .h-stat-num { color: #7c3aed; }
+
+/* Days grid */
+.days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.day-card {
+  border: 1.5px solid var(--border2); border-radius: 8px; padding: 12px 10px;
+  text-align: center; cursor: pointer; transition: all .15s; user-select: none;
+}
+.day-card:hover { border-color: var(--red); background: #fff5f5; }
+.day-card.active { border-color: var(--red); background: #fff5f5; }
+.day-card.disabled { opacity: .4; cursor: not-allowed; border-color: var(--border); background: var(--bg2); }
+.day-name { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text); margin-bottom: 8px; }
+.day-turns { display: flex; flex-direction: column; gap: 4px; }
+.turn-btn {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 0; border-radius: 3px; border: 1px solid var(--border2);
+  cursor: pointer; transition: all .12s; background: var(--bg2); color: var(--muted);
+}
+.turn-btn.on { background: var(--red); color: #fff; border-color: var(--red2); }
+.turn-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* Slider */
+.slider-row { display: flex; align-items: center; gap: 20px; }
+.slider-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); min-width: 120px; }
+.slider-val { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 600; color: var(--red); min-width: 60px; line-height: 1; }
+.slider-sub { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); display: block; margin-top: 2px; }
+input[type=range] {
+  flex: 1; height: 4px; appearance: none; -webkit-appearance: none;
+  background: linear-gradient(90deg, var(--red) var(--pct, 60%), var(--bg3) var(--pct, 60%));
+  border-radius: 100px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--red); border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2); cursor: pointer;
+}
+.range-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 4px; }
+.range-labels .marker { color: var(--red); font-weight: 700; }
+
+/* Timetable */
+.timetable-wrap { overflow-x: auto; }
+.timetable { border-collapse: collapse; width: 100%; min-width: 700px; table-layout: fixed; }
+.timetable th {
+  background: var(--bg2); padding: 8px 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); text-align: center; border-bottom: 1px solid var(--border2);
+  border-right: 1px solid var(--border);
+}
+.timetable th.hour-col { width: 110px; }
+.timetable td {
+  border: 1px solid var(--border); padding: 0;
+  height: 38px; text-align: center; vertical-align: middle;
+  position: relative; transition: background .1s;
+}
+.timetable td.hour-label {
+  background: var(--bg2); font-family: 'Source Code Pro', monospace;
+  font-size: 10px; color: var(--muted); font-weight: 500; padding: 0 8px;
+  text-align: right; white-space: nowrap;
+}
+.timetable td.disabled-day { background: repeating-linear-gradient(-45deg, #f9fafb, #f9fafb 4px, #f3f4f6 4px, #f3f4f6 8px); }
+.timetable td.psico-fixed { background: #ede9fe !important; cursor: not-allowed; }
+
+/* Cell block */
+.cell-block {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+  cursor: grab; user-select: none; border-radius: 0;
+  transition: opacity .1s; padding: 2px 4px; text-align: center; line-height: 1.2;
+}
+.cell-block:active { cursor: grabbing; opacity: .7; }
+.cell-block.tipo-estudio  { background: #dbeafe; color: #1e40af; }
+.cell-block.tipo-test     { background: #fef3c7; color: #92400e; }
+.cell-block.tipo-repaso   { background: #dcfce7; color: #166534; }
+.cell-block.tipo-psico    { background: #ede9fe; color: #5b21b6; }
+.cell-block.tipo-descanso { background: #f3f4f6; color: #6b7280; }
+
+/* Cell tipo selector (dropdown on click) */
+.cell-picker {
+  position: absolute; top: 100%; left: 0; z-index: 100;
+  background: #fff; border: 1px solid var(--border2); border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: 4px; min-width: 110px;
+  display: none;
+}
+.cell-picker.open { display: block; }
+.cell-option {
+  padding: 6px 10px; font-size: 12px; font-weight: 600; border-radius: 4px;
+  cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 6px;
+}
+.cell-option:hover { background: var(--bg2); }
+.cell-option .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* Legend */
+.h-legend { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.h-leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.h-leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* Drag ghost */
+.drag-ghost { opacity: .4; }
+
+/* Day distribution card */
+.dist-card {
+  background: var(--bg2); border: 1.5px solid var(--border2); border-radius: 8px;
+  padding: 12px; text-align: center; transition: border-color .15s;
+}
+.dist-card.inactive { opacity: .35; pointer-events: none; }
+.dist-card.over-limit { border-color: var(--red); background: #fff5f5; }
+.dist-day-name { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin-bottom: 8px; }
+.dist-turns { font-size: 10px; color: var(--muted); margin-bottom: 10px; min-height: 14px; }
+.dist-hours-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.dist-btn { width: 24px; height: 24px; border-radius: 5px; border: 1px solid var(--border2); background: var(--bg); color: var(--text2); font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .13s; line-height: 1; }
+.dist-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+.dist-btn:disabled { opacity: .3; cursor: not-allowed; }
+.dist-val { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 600; color: var(--red); min-width: 32px; }
+
+/* Note */
+.h-note { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-top: 8px; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════ ROLE PICKER ═══════════ -->
+<div class="role-screen active" id="roleScreen">
+  <div class="role-box">
+    <img class="role-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAGuAWcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooJAoAMj1FFfm38Ff8Ag4E8GfFn/gtR4s/Znjk0xfCtrajRtA15H51HxDbs7XdsXztMbAmKPA5ktmwT5i4/SQEGnKLW4XCiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXwr/wcF/8FNo/+CaX7Ausano92sPxF8eeZ4e8Jxhv3kE8kZ868x/dt4iWB6eY0Q/ir7lvr6HTLSW4uJY4IIEMkkkjBUjUDJZieAABkk1/Hf8A8F+P+Cmcv/BTP9vvXNc0m8km+Hfgzf4f8Ix5/dyW0bnzbsD+9cSAvnrsEQP3a6MNR9pNdkKTsfG/hTx5rHgfxpp3iPSdRu7HX9IvY9Ss7+KQieC5jcSJMG67g4DZ9a/s5/4I8f8ABRbSv+CnP7DHhb4jwPbQ+JEQaV4psIiB9g1WFVEw29kkBWVP9iVe4NfxX1+kv/Bs3/wVL/4d+ftzQeGvE+o/ZPhj8W3h0bWDK5EOmXu4izvj2UK7GNz02Skn7gr0MbQUoc0d0Zwlqf1n0UgYHPtS145qFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRXP8AxV+J+ifBX4ba94u8S38Ol+HvDOnz6pqV5KcJbW8KGSRz64VTx1J4FAH5h/8AB1h/wVAb9j39jKP4T+FtR+zePvjLDLZytFIVm03RR8t1NxypmJ8hT3DSkcrX8s5ORjsK+g/+CoP7eOt/8FIf21vGXxX1gzQ2usXP2bRbB2yNL0yLK20A7AhPmbHBd3PevnyvdwdH2cNd2Yyd2FKrYBHrSUV1tX0ZJ/Wh/wAGzf8AwVFH/BQT9ha28NeJdRF18TfhIkOi6yZZAZtSs9pFnfHuxZEMbn/npExP3xX6SV/PR/wZlfsI+JJ/iL43/aIv7vUtL8LW1nJ4S0i2jkaOHXbh2jkuJJF/jjgCxhe3mOe6Gv6F6+crxSm1HY3V7ahRRRWQwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAzX4W/8AB4R/wVBPg3wHo37MfhLUjHqfiVItb8atA+DBYq261smIPBldfNYf3I4+oev1/wD20/2sfDH7Dn7LnjP4qeLZ1i0Xwfpsl4Yt4V72b7sNsmf+WkspSNfdvSv4nf2pP2kfE37Xv7QvjD4meMbv7Z4k8aanLqV4w+5FuOEhQdo40Coo7KgFdeDo88+Z7ImTOAJzRRRXumIV6R+yN+y94m/bP/aU8HfC7whbm48QeNNSj0+BipKWqE5lnkx0jijDyMf7qGvNwM1/Rr/wZ+/8Evz8NfhNq/7S3i3T1j1rxtE+keD0mj+e10xXxcXYyODPIuxT12Qk9JK5sVW9nC/UqKuz9dv2Q/2XfDP7F37NXg34W+ELfyPD/gzTY9PtyRh7lxzLO/rJLIXkY/3nNek0UV4HqbBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRnFFfMH/BXz/gofpX/BMv9hjxb8SbiS2l8QCI6X4XsZSP+JhqsykQLjuiYaV/9iJu+KaTbsgPxW/4O+v+CoX/AAuP45aX+zh4Tvy/hv4dzLqXiqSGQ7L3V2T91bnBwRbxOSf+mkzA8x1+KdanjbxpqvxG8Yap4g1y+udU1vW7yW/1C8nbdLdXErl5JGPcsxJP1rLr6DD0vZwUTGTuFFFKFyD7VuSfSH/BKH9gDWf+ClX7cHg74X6atzFpN7OL7xHfRr/yDdKhIa4lz0DEYjTPWSRBX9pHw5+HmjfCbwHo3hjw9YW+laB4esYdN06ygXbFa28KBI41HoFUCvzQ/wCDWP8A4Jfn9in9iVfiT4nsGt/iL8ZoYdTlWZNsumaSAWs7bBGVLhvPcf8ATRAeUr9Sq+fxVb2k/JG8VYKKKK5xiFgvWlr4N/4OA/8AgrXJ/wAEp/2RLTVfDD6dc/FDxlfpp/hqzu0EsaJGyyXVzJH/ABRpH8n+/NH719L/ALC/7X3hv9vD9lDwV8V/CsqHS/F2nJcvbhw76fcjKXFs+P44pVdD67c9CKpxfLzdAPW6KKKkAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooARmxx61/KF/wdA/8FQT+3V+3NP4I8N34ufhv8HJJtHsGik3RalqRIF5d5BwwDKIUPTbEWH3zX7d/wDBxr/wU9X/AIJyfsEanDoN+Lb4l/EwS+H/AAyI3xLZhkxdXw9PJib5T/z0ki96/kQllMzlmLMxOSxOSx9TXoYCjzP2j6ETfQbRRRXsGQV94f8ABvT/AMExpP8AgpT+31pFprNibj4b/D4xeIfFbuv7q5jR/wBxZH3nlGCP+eaSntXwrYafPqt5FbW0Mtxc3DrFFFEhd5XY4VVA5JJIAA6k1/Yp/wAEEf8AgmdB/wAEyv2A9C8PanZpD8QvFwTxB4vlIBdLyRBstc/3bePEeOm7zGH3q4cbX5IWW7LitT7WtrWOzhWOJEjjjUKiKAFQAYAAHQAVJRRXimoVV1vWrTw5pF1f39zBZ2NjC9xcXEzhI4I0Us7sx4ChQSSegFWq/IP/AIO1P+CoX/DMP7KFp8DfCmpeR43+LsLf2q8L4l07QlJWXOPum4ceUPVFn9qqEHOSihN2PxM/4Lif8FKLr/gp3+3v4j8Z2k8//CDaCToXhC2fIEenwscTlT0edy0p7gOq/wAIr7Y/4NDf+CoB+Bf7Q+pfs7+K7/y/C3xOnN74beZzssdaVMNCM8AXMSAf9dIkA5c1+MVaPhPxXqPgbxLp+s6PeXGnatpN1Fe2N3A+yW1nicPHIh7MrAEH1Fe3PDJ0vZoyUtbn98eaK+Vf+CNf/BRjTf8Agpv+wl4V+IazWyeKLaMaR4rsoyAbLVIVUSnb/CkgKyp/sygdQa+qq8NqzszYKKKKQBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFVtZ1i18PaVc399cQ2llZRPcXE8zhI4I0BZnZjwFABJJ6AVZr8h/+DtL/gp+f2XP2S7X4IeFb/yfG3xggddTeJ8SadoanbMT6G4ceUPVFn9BVQg5SUUJux+Jf/Bc3/gpVdf8FOf2+fEXi+zuZm8CeHi2g+D7ZshUsInP+kbc8PO+6U9wGRf4RXxvRRX0VKmoRUUYt3CgjFFdL8JfhVr3xy+J3h7wb4X0+bVvEfinUYNK0yziGWuLiZwiL7DJGT0AyTwKttJXYJXP0+/4NRP+CYI/a8/bHl+L/iew8/wF8Gp4rq2WVMxalrbDdbR88EQD983o3kg8NX9SIGK8A/4JjfsJ6F/wTi/Yt8G/CjRBDNNolqJ9Yvo1wdU1KXDXNwe+Gfhc9ERF7V7/AF87Wre0m5GyVkFFFIWAHWshnK/HH40eHv2dvhB4l8d+K7+LTPDXhLTZ9V1K6cjEUMSF2x6scYUdSSAOTX8U3/BRL9trxD/wUN/bE8a/FnxGZIZ/Et4fsFkX3LpdhH8ltbL2wkQUEjqxZupNfvV/wdQftVT/ABI+FZ/Z08LahJFeTpFrniNoZMByh32tk+OoYjzWB7iKv5rrq2ktZnilQxyRsVdWGCpHUV05TiKFWpOMHeUNH5HsZnw9j8BhcPjMVTcaddOUH3Sdv+Cu6aZWooor3z58/Sj/AINkP+CoB/YH/butvCviO/Ft8NPi88GiasZZNsOm324iyvfQAO5ic9NkxJ+4K/rLDdfav4Do5DGcjOexBwRX9cP/AAba/wDBT5f+CiH7BlhpfiK/+0fEz4VLDoHiHzHzLfwhCLS+Pc+bGhVj3kikPcV4+OoWfOuppCXQ/RGiiivPNAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAOW+Nvxm8Pfs8/CLxJ468WahFpfhnwnp0+q6ldP0hgiQuxA7scYA6kkAcmv4p/wDgoz+254g/4KI/tj+Nfiz4hMsT+I7wjTrJn3LpdhH8ltbL2+SMDOOrF26sa/ZT/g8O/wCCoH9m6Xov7L/hLUsTXqw6945aGTlIgQ9lYNj+8R57r6LB2Jr+fivVy+hZe0ZnKQUUUV6ZmFfuv/wZ7f8ABL5fFfjHWf2n/Fum77Dw+8uh+CEnjBWW7Klbu+XPURo3kqem55e6CvyA/Yk/ZI8S/t1ftU+C/hR4TiLav4w1FLUz7S0djbjLz3L4/giiV3Prtx1Ir+2D9mH9nXw1+yV+z/4R+GvhC0Fl4b8GaZDpdlGQNzqi/NK57ySOWdj3Z2PevNx9ey5EaQXU7zGKKKK8k0CvLv2uf2l9G/ZE/Z58S+P9ddGttCtWeC3LYa9uW+WGBfd3IHsMntXqGQe4r8Pv+Dg39uM/Gn4623wm0G68zw38P5fM1Ro3+S81RlwVOOohQ7f95n9K83NsdHCYeVXrsvU+48O+D6nEed0sCv4a96b7QW/zey9T4M+KnxP1r41fEzXvF/iK5a71zxHeyX97KT1kc52j0VRhQOwAr4y/bO+Ex8K+L18Q2kYFhrbHzgo4iuB976Buv1zX1dWF8SvAVr8TvBGoaJdABbuP91IesMo5Rx9D+hNfA5Hm08HjI1pPRv3vNM/tTxG4GoZ5w/LL6EUp0lelbo4rRejXu/j0Pz9KE54pK0/EugXXhfW7rTryMxXVlK0MqEdGBxWYeSa/dYTjOKlHZn+eFajOlN06itJNpp9Gtwr68/4Ilf8ABSS9/wCCY37efhrxvPcXH/CFauw0PxfaJkifTZnG6XaDy8DhZl7nYV/iNfIdFKpTU48rM07H99Hh/X7PxVodnqenXUF9p2owR3VrcwuHiuInUMjqw4KspBBHUGrlfjz/AMGkP/BUA/tJ/st3vwG8V34l8ZfCSBX0V5XzJqOhs21FHcm2ciM+kbw+hr9hq+dnBxk4s2TuFFFFSMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK8d/b4/bJ8N/sCfsk+Nfiz4odDp/hOwaaC13hX1K7bCW9qmf4pJWRfYEnoDXsROK/mb/4O5/8AgqAP2g/2ltP+AHhPUjN4Q+Fc5uPEDQv+7v8AXGUgxnHUW0bFPaSSUfwitaNJ1JqKE3Y/KX9ob47+I/2n/jh4q+Ifi69bUPEvjLU59V1CY/dMkjZ2KOyIMKo7KoA6VxNFFfQxiorlRi3cKACfwor6j/4I8f8ABO7U/wDgpv8At1eE/hvFHcx+Gkk/tXxTfRA/6BpcLAzHd/C8hKxJ/tyqegNKpNQi5MErn7Wf8GhX/BMA/BT4A6p+0V4s00ReJviTCbDwws6DzLLRlcF51zypuZVBB/55xIRw5r9pazPBvg7TPh/4U03QtGsrfTdH0a0isbG0gXbFawRIEjjUdlVQAPYVp185ObnJyfU2SsFFFMkkCrkkAdyT0qRnzt/wU3/bPtf2Gv2Utc8UpLGfEd+p0zw/bnBM17IpCvj+7GMyH2QDvX83upalda3qVzfX1xLd3t9K9xcTytueeR2LM7HuSSSfrX11/wAFpv24z+2J+1jd2Gj3Zm8EeAWk0nSQjZju5g2Li699zjap/uoPWvj/AK1+ZcQ5j9ZxPJB+7HRevVn94+CvBP8AYWSLE4iNq9e0pd4x+zH7tX5vXYKKKK8A/Yz5y/bf+EmfI8W2MWA2231EKO/RJPx+6foK+bQpPY1+ifiHw/a+K9BvNMvkElnfRNDKp9D3HuOo9xXwf8SPAlz8M/Gt/o14pMlnIQj4wJUPKsPYjBr9Y4Jzj21B4So/eht6f8A/ijx94H/s7M1nOFjalX+K2yn1/wDAt/W5zdFDdTRX3h/PR7V/wT5/bQ8Rf8E+v2vfBXxa8MtI934Wvle8sw5VdTsn+S5tW9pIiw56NtbqBX9rfwC+OPhz9pb4MeGPH/hG/TU/DPi/TYNV064X+OKVAwDDsynKsvUMpB6V/B1X78f8Gd//AAVBKtrn7L3i3UgAfO17wM07/V72wX/0ei/9d/avMx9C69pE0jI/fyiiivKNAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiikZtpHvQB8m/wDBab/go7Yf8Exv2DvFHj5JrZvF2oKdG8JWchBN1qcysI2290iUPM3tHjqwr+MzxN4kvvGPiC/1bVLue/1TVLmS8vLqdy8tzNIxeSRierMxJJ9TX6G/8HL3/BUA/wDBQf8AbxvNC8O35ufhp8Jnn0LQzG5MOoXQcC8vR2O+RBGh/wCecSkfeNfnJXs4Gjyx5nuzKb1Ciiiu8gUDIPtX9Yf/AAbDf8Evv+GC/wBhaDxf4l08W3xJ+MCQa1qQljAm03T9pNlZnjKnYxlcf35sH7gr8RP+DcD/AIJhN/wUX/b30688Q6e118M/hiYtf8SGRMw30gY/ZLE9j5sq7mHeOKT1Ff10xQrCuFAUAYAAwAPSvIx9fm9xGkI9R1FFFecaAT718T/8Fvf25/8Ahkn9lWbRNFuzD42+ISy6XpxRv3lnb7cXFz6jap2qf7zj0r7H8Q+IbLwpot5qWo3EVnYWED3NzPK21IYkUszMewABNfzZf8FHv2ybv9uT9q3X/GJkm/sCBv7N8P2z5xb2EbHYcdmkOZG939q8HiDMfquGtF+9LRfqz9b8G+CXn+dxq143oULSl2b+zH5vV+SZ4QqhFAHQe+aWiivzE/vhJJWQUUUUDCvFP2zfhKPFfhFPEVpFuvtGXbcYHMluT1/4Cf0J9K9rps8Ed1byRSossMqlJEYZDqRgg/UV3Zbj54PEwxFPp+K6o+a4v4aw+fZTWyzEfbWj7S6P5P8AA/OLafzpK7r4+fC2T4TfES709VJsZT59k5H34m6D6jkH6Vwp6mv33B4qGIpRrU3dNXP82c2yvEZdi6mBxUbTptxa80Fdf8CPjZ4i/Zt+Mnhjx74Svn07xN4R1KDVdOuVJ+SaJwwBHdW5Vh0KsR3rkKK3lFSVmeemf3Ef8E8/21vDv/BQf9kHwV8WfDZjitfFFir3lmHDPpl6nyXNq3vHKGAz1Xa3QivbK/mM/wCDSX/gp+P2av2pL34E+K9RMHgz4uTq2jNM+ItP11V2xgeguYwIj6yJD6mv6c85r56tSdObibJ3CiiishhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV+cX/By3/wAFQR/wT6/YPvNB8OaiLT4m/FhZtC0Py3HnafalQLy9HcbI2CIe0kqkfdNfod4m8S2Pg3w/fatql3BYaZpdvJeXl1O2yK2hjUu8jMeAqqCST2Ffxm/8Fov+Cj+of8FOf28vFHj4TTjwjp7nRfCVo+QLbS4Xby32no8zFpm95MdFFb4Wj7Sa7ImTsfJztnA9KbRRX0CVtjEKtaLot34i1a1sLC2nvL6+mS3treFC8k8rsFRFUclmYgADqTVWv1+/4NKv+CX/APw03+1Zd/HTxTYCXwT8Ip1GkpPHmPUddZd0eM9RbIRKfR2h96xxFVU4OQ4q5+2f/BD3/gmtZ/8ABMP9gnw34MuYYj4310Lrvi+5UAmXUZkXMIbukCBYl7HYzfxGvsOiivn2222zdIKKKKQH54f8F+f2lPFPhn4GWXwr8E6J4i1LU/HSmTWrnTtOmuFtdOQ8xF0UgNM424znYreor8Yx8BvHmAB4F8Z4/wCwHdf/ABFf1UAbB3GaXcfSvncyyD67W9rOo10Stsfs/AvjDLhjLf7PwuCjJtuUpOTTk38ui0R/KwPgN48/6Ebxn/4I7r/4ij/hQ3jz/oRvGf8A4I7r/wCIr+qfcfSjcfSvP/1Ph/z9f3f8E+z/AOJlsb/0Ax/8Df8A8ifysf8AChvHn/QjeM//AAR3X/xFH/ChvHn/AEI3jP8A8Ed1/wDEV/VPuPpRuPpR/qfD/n6/u/4If8TLY3/oBj/4G/8A5E/lY/4UN48/6Ebxn/4I7r/4ij/hQvjz/oRvGf8A4I7r/wCIr+qfcfSjcfSj/U+H/P1/d/wQ/wCJlsb/ANAMf/A3/wDIn8hn7VH7GHjv4lfDeW5g8C+Mf7T0NXu4D/Yd1l4wMyJ9zpgZ+q18AupXn1r++/G48k49K/kn/wCDlT/gmAf+Ce37eN7rfhzTTa/DL4rNNrug+UhENhclgbyxHYbJGDovaOVAPumvs+HsO8HT+rOfMul+h+Lce8XQ4kzD+0vq6ozatLld+a2z2WttPuPznooor6c+GLmga9eeGNZtNR065nstQsJ47m1uYHKS28qMGSRWHIZWAII6EV/ZT/wRC/4KSWf/AAU5/YK8NeNrm4t/+E20ZRoni+0jIBh1GFRul254SdCky9hvK/wmv4yq/Q3/AINuP+Cnzf8ABOz9vfT9P8QXxtvhr8U2h8P+IRI5EVjMXItL49h5UjlWPaOWQ9hXBjqHPHmW6LhKx/XPRTVkDDIOR1B9adXjGoUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUVxf7RHx68N/svfA/xT8Q/F98mneGPB+mzapqM56iONc7VH8TscKq92YDvR5AflD/AMHdP/BUD/hn79mmw/Z+8Kah5Xi74qwfaNfeJ8SWGiK5BjPobmRSnvHHKP4hX8zpOa9h/b3/AGx/Ev7ff7WnjT4seKZX/tDxZftNb2xcsmm2a/JbWqf7McQRfcgnqTXj1e9hKPs4We5jJ3CiijFdRJ1fwN+C3iL9oz4v+GvAnhLT5NU8TeLdSh0rTbVP+Ws0rhRk9lGcs3QKCTwK/tb/AOCdn7E3hz/gnp+x94M+E3htI5IPDVkov7wJtbVL5/nubpuOryFiM9F2r0Ar8bP+DPD/AIJhefd61+1F4s087ITP4f8AA6TJ95sbL2/X6AmBD/139BX9ANeHja3PPlWyNoqwUUUVxlBRSbh60tABRRRQAUUUUAFFFFABRRRQAV8j/wDBav8A4Juaf/wU4/YN8T+BEhhXxhpinW/CV44ANtqcKNsTceiTKWhbtiTPVRX1xQRmmm07oR/Av4h8PX3hPXb3S9TtZ7DUtNuJLS7tZ0KS200bFHjZTyGVgQR2IqnX7G/8Hcn/AAS/P7PX7Tll8fvCuniLwd8V5/I11IUwmn64qEs5xwBcxqZPeSOU/wAQr8c9pPavocPV9pBSMpKwlKDgEetJRWrV9GSf1kf8Gx3/AAVBH7e/7CVt4T8S6j9q+JfwhSHRdV86TM+o2O0izvDzliUUxOf78RJ++K/Syv4s/wDgjj/wUV1P/gmV+3b4V+IsUtw/hiZxpHiqyjJ/03SpmUTfKOrxELKn+1EB0Jr+zrwh4t07x34Y0/WtHvbfUtI1e1ivrG7gbdFdQSoHjkU91ZSCD6GvAxVL2dTTZm0XdGlRRRXOUFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV/Pv/wAHh/8AwVC/tHVtF/Ze8JagDb2Rh1/xw8Emd8uN9nYN/ujE7j1aD0Nfst/wUc/bg8Pf8E7v2OPGnxZ8QmOePw5ZkadZF9rapfyfJbWy9/nkK5I+6oZugNfxUfGr4w+If2hPi34l8c+LL+TVPEvi3Up9V1K6c8zTSuXbHoozgDoAAB0rswVHnnzPZEyOUooor3DEK9n/AOCf/wCxf4k/4KBftd+DPhN4YV1vvFN8sd1dhNyaZZJ89zdP7RxBmx3O1epFeMAE/hX9NP8AwaPf8Evx+zr+zHffH3xZp3k+MvivCIdDWePEmn6GrAq47g3Mi+YfWNIfU1y4ut7OF+pUVdn6t/AD4G+Hf2aPgr4X+H/hKwj03wz4Q02HS9Ot1H3YolCgse7scsx6lmJPJrsKKK8HzNgpCwHcUtcF+0D8UV+F3w+uLtHX7fdZgtF77yPvfRRz+VeZnObYfLMFVx+KdoU4uT+XT1ey8zpweFqYmvHD0VeUnZHmHxy/at1Xwt48n0zw+1qbewHlzySR+Z5kvcDnoOn1zXI/8NkeM/8Anpp3/gN/9evKpZHnneSRi8khLszHJJ7mkr/PfOPFribF42riaOLnThJtqMXZRXRL0/M/orAcGZVRoQpVKMZSSV21q31Z6t/w2P4z/wCemnf+A4/xo/4bH8Z/89NO/wDAcf415TRXmf8AETeKf+g+r/4Edn+qeT/9A8fuPVv+Gx/Gf/PTTv8AwHH+NH/DY/jP/npp3/gOP8a8poo/4ibxT/0H1f8AwIP9U8n/AOgeP3Hq3/DY/jP/AJ6ad/4Dj/Gj/hsfxn/z007/AMBx/jXlNFH/ABE3in/oPq/+BB/qnk//AEDx+49W/wCGx/Gf/PTTv/Acf40f8Nj+M/8Anpp3/gOP8a8poo/4ibxT/wBB9X/wIP8AVPJ/+geP3Hq3/DY/jP8A56ad/wCA4/xpP+Gx/Gf/AD007/wHH+NeVUUf8RN4p/6D6v8A4EH+qeT/APQPH7iP9uBrj9vr9lzxf8KPGkelSaR4qsjFFcfZB5mnXanfb3SHPDRyqre4yOhNfyk/GP4Sa38CPilr/g3xJaNZa94bvpbC9hI+66NjcPVWGGB7gg96/q6BxX5O/wDByD+wsL7TtK+Pfh+z/fW3laN4rSJPvJ921vG+h/dMf+uVfu/gN4t5hPOXlGe4iVSNfSEpO9prZXfSS0162PheO+EMNTwf1vAU1Fw+JLqv+Afj6Rg0UpUkmkr+3z8SCv6U/wDg0N/4Ken43fs96j+zr4rv9/in4ZwG+8NvM+Xv9Fd8NCM8lraVwAP+ecsYHCGv5rK9Z/Yd/a88T/sJftW+C/it4TndNW8Iagly8G8qmoWx+Se1fH8EsTOh9N2eoFc2Lo+0hZblRdmf3N0Vwv7M/wC0P4a/ax+AXhP4keD71b/w14y02HU7GUfeVXHzRuO0iNuRl7MjDtXdV4BsFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRmivGP+CgfjH4p+Cf2SPGVz8FPC0ni74o3Nk1l4fsxcwW6W9xL8guneZ0TbCCZNucsUC45o62A/no/4Ozf+CoP/DUf7Wdr8EfCmo+f4G+EM7jU2hfMWpa6RtmJ7MLdD5Q9Hab2r8ia/QTV/wDg2g/bk17U7m9vfhHcXd7eSvPcTy+JdMeSeR2LM7E3GSSSSSe5qr/xDD/ttf8ARG2/8KLTP/kivboVKVOCimjJps+BaK++v+IYf9tr/ojbf+FFpn/yRR/xDEfttD/mjbf+FFpn/wAkVt9Zp9xcp57/AMEUP+Cbt7/wU7/by8M+A5YbhfB2lsNb8XXceQLfTYWXfGGHR5mKQr6GQt/Ca/sv8PeH7LwpoVlpem2sFjpum28draW0KBI7eKNQqIoHAVVAAHYCvgb/AIN2P+CTVz/wS+/YzkHjDT7e1+LPj+4GpeJtkiTNYRpuW2sRIhKsI0LMxUkGSV+SADX6DV42Kre0npsaRVgooornKI3mWNSSQFHJPpXxl+0j8VT8T/iBL5Dk6ZppNvbAdGwfmf8AE/pivpf46xa/e+Abmy8OWbXN/f8A7gurqhhjP3myT1I4/Gvmofss+Oc/8gVuP+myf41/NPj5is8x1OnkeVYapOm/eqSjGTT7Rul838j9K8PqeAoVJY/GVYxktIptX83+iPPs0V6D/wAMteOf+gK3/f8AT/Gl/wCGWvHP/QFb/v8Ap/jX8t/6g8Sf9AFX/wAAl/kfrf8ArJlf/QRD/wACR57RXoX/AAy145/6Arf9/wBP8aP+GWvHP/QFb/v+n+NH+oPEn/QBV/8AAJf5B/rJlf8A0EQ/8CR57RXoX/DLXjn/AKArf9/0/wAaP+GWvHP/AEBW/wC/6f40f6g8Sf8AQBV/8Al/kH+smV/9BEP/AAJHntFehf8ADLXjn/oCt/3/AE/xo/4Za8c/9AVv+/6f40f6g8Sf9AFX/wAAl/kH+smV/wDQRD/wJHntFehf8MteOf8AoCt/3/T/ABo/4Za8c/8AQFb/AL/p/jR/qDxJ/wBAFX/wCX+Qf6yZX/0EQ/8AAkee0V6F/wAMteOf+gK3/f8AT/Gj/hlrxz/0BW/7/p/jR/qDxJ/0AVf/AACX+Qf6yZX/ANBEP/Akee1ifEf4d6P8Xfh/rfhXxBaR3+g+I7KXT9Qt2GfNhkUqcf7Q4IPYgGvXf+GWvHP/AEBW/wC/6f40h/Za8c/9AU/9/wBP8a2w/BHFFCrGtRwVaMotNNQldNbPYzq5/lNSLhOvBp6P3kfyZftn/staz+xl+0n4m+HmtK8smiXGbO6K4W/tH+aCdfZ4yCfQhh2ryc8Gv6NP+C4P/BCr4n/ttfDvQPFPgHwlHf8AxG8KyizNubyC3bVdPkYkx+ZI6ruic713H7ruPSvzF/4hh/22v+iNt/4UWmf/ACRX+kPAHEeJzTJKOJzGnKlXtacZJxfMt2k+j3XrY/nHPsDRw2NnTw01OG6ad9H0+Wx8C0V99f8AEMP+21/0Rtv/AAotM/8Akij/AIhh/wBtr/ojbf8AhRaZ/wDJFfafWafc8blPuT/gzx/4KgHw54r1r9l/xbqKrY6y02u+CWncARXIG67sVz2dAZkX+8k3dhX9C1fyU/CP/g3g/b4+BfxQ8PeM/C3wquNK8SeFdRg1XTLyLxJpga3nhcOjf8fHIyOR3GR3r+qL9nfxj4o+IHwR8L6z428MyeDPGGoabDLrWhvcR3H9mXm3E0QkjZldA4JVgTlSO+RXj4qMefmg73NYnaUUUVzDCiiigAooooAKKKKACiiigAooooAKKKKACjFFFABRRRQAUEZoooAMYooooAKKKKAAjP4UEZooosAYHoKMD0FFFABgegowPQUUUAGB6CjA9BRRQAYHoKMD0FFFABgegowPQUUUAGB6CjA9BRRQAYHoKMD0FFFACbAew9aXGKKKACiiigAoAxRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB//2Q==" alt="ACRAPOL">
+    <div class="role-title">ACRAPOL</div>
+    <div class="role-sub">Academia de Preparación · Policía Nacional</div>
+    <div class="role-cards">
+      <div class="role-card" onclick="enterAsStudent()">
+        <div class="role-icon">🎓</div>
+        <div class="role-name">Alumno</div>
+        <div class="role-desc">Ver cronograma y generar tu plan de estudio</div>
+      </div>
+      <div class="role-card" onclick="showLogin()">
+        <div class="role-icon">🔐</div>
+        <div class="role-name">Profesor</div>
+        <div class="role-desc">Acceso completo: editar y gestionar el cronograma</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <img class="login-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAGuAWcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooJAoAMj1FFfm38Ff8Ag4E8GfFn/gtR4s/Znjk0xfCtrajRtA15H51HxDbs7XdsXztMbAmKPA5ktmwT5i4/SQEGnKLW4XCiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXwr/wcF/8FNo/+CaX7Ausano92sPxF8eeZ4e8Jxhv3kE8kZ868x/dt4iWB6eY0Q/ir7lvr6HTLSW4uJY4IIEMkkkjBUjUDJZieAABkk1/Hf8A8F+P+Cmcv/BTP9vvXNc0m8km+Hfgzf4f8Ix5/dyW0bnzbsD+9cSAvnrsEQP3a6MNR9pNdkKTsfG/hTx5rHgfxpp3iPSdRu7HX9IvY9Ss7+KQieC5jcSJMG67g4DZ9a/s5/4I8f8ABRbSv+CnP7DHhb4jwPbQ+JEQaV4psIiB9g1WFVEw29kkBWVP9iVe4NfxX1+kv/Bs3/wVL/4d+ftzQeGvE+o/ZPhj8W3h0bWDK5EOmXu4izvj2UK7GNz02Skn7gr0MbQUoc0d0Zwlqf1n0UgYHPtS145qFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRXP8AxV+J+ifBX4ba94u8S38Ol+HvDOnz6pqV5KcJbW8KGSRz64VTx1J4FAH5h/8AB1h/wVAb9j39jKP4T+FtR+zePvjLDLZytFIVm03RR8t1NxypmJ8hT3DSkcrX8s5ORjsK+g/+CoP7eOt/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" alt="ACRAPOL">
+    <div class="login-title">ACRAPOL</div>
+    <div class="login-sub">Acceso Profesor</div>
+    <label class="login-label" for="loginPass">Contraseña</label>
+    <input class="login-input" id="loginPass" type="password" placeholder="••••••••••••"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-err" id="loginErr"></div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-back" onclick="showRolePicker()">← Volver</div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app" style="display:none">
+
+  <!-- Admin banner -->
+  <div class="admin-banner" id="adminBanner" style="display:none">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Modo Administrador — Tienes acceso completo al cronograma
+    <button onclick="logout()" style="margin-left:16px;background:transparent;border:1px solid rgba(205,22,25,.3);color:var(--red);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;cursor:pointer;letter-spacing:.5px;">Cerrar sesión</button>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <img class="header-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAGuAWcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooJAoAMj1FFfm38Ff8Ag4E8GfFn/gtR4s/Znjk0xfCtrajRtA15H51HxDbs7XdsXztMbAmKPA5ktmwT5i4/SQEGnKLW4XCiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXwr/wcF/8FNo/+CaX7Ausano92sPxF8eeZ4e8Jxhv3kE8kZ868x/dt4iWB6eY0Q/ir7lvr6HTLSW4uJY4IIEMkkkjBUjUDJZieAABkk1/Hf8A8F+P+Cmcv/BTP9vvXNc0m8km+Hfgzf4f8Ix5/dyW0bnzbsD+9cSAvnrsEQP3a6MNR9pNdkKTsfG/hTx5rHgfxpp3iPSdRu7HX9IvY9Ss7+KQieC5jcSJMG67g4DZ9a/s5/4I8f8ABRbSv+CnP7DHhb4jwPbQ+JEQaV4psIiB9g1WFVEw29kkBWVP9iVe4NfxX1+kv/Bs3/wVL/4d+ftzQeGvE+o/ZPhj8W3h0bWDK5EOmXu4izvj2UK7GNz02Skn7gr0MbQUoc0d0Zwlqf1n0UgYHPtS145qFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRXP8AxV+J+ifBX4ba94u8S38Ol+HvDOnz6pqV5KcJbW8KGSRz64VTx1J4FAH5h/8AB1h/wVAb9j39jKP4T+FtR+zePvjLDLZytFIVm03RR8t1NxypmJ8hT3DSkcrX8s5ORjsK+g/+CoP7eOt/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" alt="ACRAPOL">
+        <div class="header-divider"></div>
+        <div class="header-academy">
+          <div class="header-name">ACRAPOL</div>
+          <div class="header-sub">Academia de Preparación · Policía Nacional</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-badge">
+          <div class="header-badge-dot"></div>
+          <div class="header-badge-text">Escala Básica</div>
+        </div>
+        <div class="header-promo-wrap">
+          <input class="header-promo" id="promoInput" type="text" value="PROMOCIÓN 43"
+            spellcheck="false" onblur="savePromo()" onkeydown="if(event.key==='Enter')this.blur()">
+          <span class="promo-icon" id="promoIcon" style="display:none">✎</span>
+        </div>
+        <div class="role-pill student" id="rolePill" onclick="logout()">
+          <span id="rolePillText">Alumno</span>
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero-strip">
+    <div class="hero-inner">
+      <!-- LEFT: title changes per tab -->
+      <div class="hero-left">
+        <div class="hero-eyebrow" id="heroEyebrow">Sistema de planificación</div>
+        <h1 class="hero-title" id="heroTitle">Planificación de <span>Estudio</span></h1>
+        <p class="hero-desc" id="heroDesc">Gestiona tu incorporación al curso, integra el temario pendiente y sigue tu progreso semana a semana.</p>
+      </div>
+      <!-- RIGHT: plan stats -->
+      <div class="hero-stats" id="heroStatsPlan">
+        <div class="hstat c"><div class="hstat-num" id="statCurrent">—</div><div class="hstat-lbl">Semana</div></div>
+        <div class="hstat p"><div class="hstat-num" id="statPending">—</div><div class="hstat-lbl">Recuperar</div></div>
+        <div class="hstat d"><div class="hstat-num" id="statDone">0</div><div class="hstat-lbl">Completadas</div></div>
+        <div class="hstat t"><div class="hstat-num" id="statTotal">0</div><div class="hstat-lbl">Total</div></div>
+      </div>
+      <!-- RIGHT: horario stats -->
+      <div class="h-stats" id="heroStatsHorario" style="display:none">
+        <div class="h-stat hs"><div class="h-stat-num" id="hStatSem">0h</div><div class="h-stat-lbl">Semanales</div></div>
+        <div class="h-stat he"><div class="h-stat-num" id="hStatEst">0h</div><div class="h-stat-lbl">Estudio</div></div>
+        <div class="h-stat ht"><div class="h-stat-num" id="hStatTest">0h</div><div class="h-stat-lbl">Test</div></div>
+        <div class="h-stat hr"><div class="h-stat-num" id="hStatRep">0h</div><div class="h-stat-lbl">Repaso</div></div>
+        <div class="h-stat hp"><div class="h-stat-num" id="hStatPsi">0h</div><div class="h-stat-lbl">Psicos</div></div>
+      </div>
+    </div>
+  </div>
+
+<!-- ═══════════ TAB NAV ═══════════ -->
+<div style="background:var(--bg);border-bottom:1px solid var(--border2);">
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabBtnPlan" onclick="switchTab('plan')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Planificación de estudio
+    </button>
+    <button class="tab-btn" id="tabBtnHorario" onclick="switchTab('horario')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Horario semanal
+    </button>
+  </div>
+</div>
+
+<div class="tab-content active" id="tabPlan">
+  <main class="main">
+
+    <!-- SELECTOR -->
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Semana de incorporación</div>
+      </div>
+      <div class="panel">
+        <div class="selector-inner">
+          <div class="field-group">
+            <div class="field-label">Selecciona tu semana de entrada</div>
+            <select id="weekSelect"></select>
+          </div>
+          <button class="btn btn-red" onclick="applyWeek()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            Generar plan
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOVERY -->
+    <div class="recovery-panel" id="recoveryPanel">
+      <div class="recovery-title">⚠ TEMARIO A RECUPERAR</div>
+      <p class="recovery-desc" id="recoveryText"></p>
+      <div class="recovery-grid" id="recoveryGrid"></div>
+
+      <!-- Weeks selector -->
+      <div style="margin:16px 0 12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="font-size:13px;color:var(--text2);font-weight:600;">¿En cuántas semanas quieres recuperar todo?</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="dist-btn" onclick="changeRecoveryWeeks(-1)" id="recWkMinus">−</button>
+          <span id="recoveryWeeksVal" style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;color:var(--gold2);min-width:28px;text-align:center;">—</span>
+          <button class="dist-btn" onclick="changeRecoveryWeeks(1)" id="recWkPlus">+</button>
+          <span style="font-size:12px;color:var(--muted);">semanas</span>
+        </div>
+        <span style="font-size:11px;color:var(--muted);" id="recoveryWeeksHint"></span>
+      </div>
+
+      <div class="recovery-actions">
+        <button class="btn btn-gold" onclick="integrateRecovery()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Integrar recuperación en mi planificación
+        </button>
+        <button class="btn btn-ghost" onclick="dismissRecovery()">Ver solo mi plan</button>
+      </div>
+    </div>
+
+    <!-- CRONOGRAMA -->
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Cronograma completo</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-ghost btn-sm" id="btnReset" onclick="resetPlan()" style="display:none">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Reiniciar vista
+          </button>
+          <button class="btn btn-ghost btn-sm" id="btnAddWeek" onclick="openAddModal()" style="display:none">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Añadir semana
+          </button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="table-toolbar">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <span class="table-toolbar-title">SEMANAS</span>
+            <div class="legend">
+              <div class="leg"><div class="leg-dot" style="background:#991b1b"></div>Estudio</div>
+              <div class="leg"><div class="leg-dot" style="background:#92400e"></div>Repaso 1</div>
+              <div class="leg"><div class="leg-dot" style="background:#713f12"></div>Repaso 2</div>
+              <div class="leg"><div class="leg-dot" style="background:#166534"></div>Libre</div>
+              <div class="leg"><div class="leg-dot" style="background:#075985"></div>Recuperar</div>
+            </div>
+          </div>
+          <span style="font-size:11px;color:var(--muted)"><span id="totalWeeksLabel">—</span> semanas</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Semana</th>
+                <th>Fecha</th>
+                <th>Estudio</th>
+                <th>Repaso 1</th>
+                <th>Repaso 2</th>
+                <th class="center">Temas a Recuperar</th>
+                <th class="center">Otros</th>
+                <th class="center">✓</th>
+                <th class="center" id="thAcciones" style="display:none">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+  </main>
+</div>
+
+<!-- ═══════════ HORARIO SEMANAL ═══════════ -->
+<div class="tab-content" id="tabHorario">
+<div class="horario-wrap">
+
+  <!-- CONFIGURACIÓN -->
+  <div class="h-section">
+    <div class="h-panel">
+      <div class="h-panel-header">
+        <svg width="13" height="13" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span class="h-panel-title">Configuración del horario</span>
+      </div>
+      <div class="h-panel-body">
+
+        <!-- Days -->
+        <div style="margin-bottom:6px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Días disponibles para estudiar</div>
+        <div class="days-grid" id="daysGrid" style="margin-bottom:20px;"></div>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.8;">
+          Mañanas: 07:00–14:00 &nbsp;·&nbsp; Tardes: 15:00–22:00 &nbsp;·&nbsp; Noches: 00:00–07:00<br>
+          ⚠ Los psicotécnicos se asignan siempre los jueves 17:00–19:00 h
+        </p>
+
+        <!-- Slider -->
+        <div class="slider-row">
+          <div style="text-align:center;min-width:70px;">
+            <div class="slider-val"><span id="sliderVal">44</span><span style="font-size:14px">h</span></div>
+            <span class="slider-sub">horas/semana</span>
+          </div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;">Horas semanales de estudio</span>
+            </div>
+            <input type="range" id="hoursSlider" min="4" max="70" value="44" oninput="updateSlider()">
+            <div class="range-labels"><span>4h</span><span class="marker">★ 44h dedicación exclusiva</span><span>70h</span></div>
+          </div>
+        </div>
+
+        <!-- Day distribution -->
+        <div id="dayDistPanel" style="display:none;margin-top:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Distribución por día</span>
+            <span style="font-size:12px;color:var(--muted);">Total asignado: <strong id="distAssigned" style="color:var(--red)">0h</strong> / <strong id="distTotal">0h</strong></span>
+          </div>
+          <div id="dayDistGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;"></div>
+          <div id="distWarning" style="display:none;margin-top:10px;font-size:12px;color:var(--red);font-weight:600;">
+            ⚠ El total asignado no coincide con las horas semanales
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+          <button class="btn btn-red" onclick="generateTimetable()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            Generar horario
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMETABLE -->
+  <div class="h-section" id="timetableSection" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;">
+        <span style="width:3px;height:13px;background:var(--red);border-radius:2px;display:inline-block"></span>
+        Tu horario semanal
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-ghost btn-sm" onclick="resetTimetable()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reiniciar
+        </button>
+        <div class="h-legend">
+          <div class="h-leg"><div class="h-leg-dot" style="background:#dbeafe;border:1px solid #93c5fd"></div>Estudio</div>
+          <div class="h-leg"><div class="h-leg-dot" style="background:#fef3c7;border:1px solid #fcd34d"></div>Test</div>
+          <div class="h-leg"><div class="h-leg-dot" style="background:#dcfce7;border:1px solid #86efac"></div>Repaso</div>
+          <div class="h-leg"><div class="h-leg-dot" style="background:#ede9fe;border:1px solid #c4b5fd"></div>Psico</div>
+        </div>
+      </div>
+    </div>
+    <div class="h-panel">
+      <div class="h-note" style="padding:10px 16px 0;font-size:11px;color:var(--muted);">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        Arrastra y suelta las celdas para personalizar tu horario · Haz clic en una celda para cambiar su tipo
+      </div>
+      <div class="timetable-wrap" style="padding:12px;">
+        <table class="timetable" id="timetable"></table>
+      </div>
+      <div style="padding:10px 16px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="descansoLabel" style="font-size:12px;font-weight:600;color:var(--muted);"></span>
+      </div>
+    </div>
+    <!-- Key -->
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;">
+      <span><strong style="color:var(--text)">Estudio</strong> = temas semanales</span>
+      <span><strong style="color:var(--text)">Test</strong> = exámenes temas semana anterior</span>
+      <span><strong style="color:var(--text)">Repaso</strong> = temas semanales</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">AÑADIR SEMANA</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Número de semana</label>
+          <input class="form-input" id="fSemana" type="number" min="1" placeholder="Ej: 34">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <input class="form-input" id="fFecha" type="text" placeholder="Ej: 06-jul">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estudio (temas)</label>
+          <input class="form-input" id="fEstudio" type="text" placeholder="Ej: 1-5 o LIBRE">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Repaso 1</label>
+          <input class="form-input" id="fRepaso1" type="text" placeholder="Ej: 6-7">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Repaso 2</label>
+          <input class="form-input" id="fRepaso2" type="text" placeholder="Ej: 8">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Otros</label>
+          <input class="form-input" id="fExtra" type="text" placeholder="Ej: MÓD 4">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-red" id="modalSaveBtn" onclick="saveModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════ AUTH ══════════════
+const ADMIN_PASS = 'BrunoPedro2026';
+let isAdmin = false;
+
+function showRolePicker() {
+  document.getElementById('roleScreen').classList.add('active');
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('app').style.display = 'none';
+}
+function showLogin() {
+  document.getElementById('roleScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+  setTimeout(() => document.getElementById('loginPass').focus(), 100);
+}
+function doLogin() {
+  const pass = document.getElementById('loginPass').value;
+  if (pass === ADMIN_PASS) {
+    isAdmin = true;
+    sessionStorage.setItem('acrapol_role', 'admin');
+    launchApp();
+  } else {
+    document.getElementById('loginErr').textContent = 'Contraseña incorrecta';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+function enterAsStudent() {
+  isAdmin = false;
+  sessionStorage.setItem('acrapol_role', 'student');
+  launchApp();
+}
+function logout() {
+  isAdmin = false;
+  sessionStorage.removeItem('acrapol_role');
+  currentWeek = null;
+  recoveryIntegrated = false;
+  recoveryMap = {};
+  document.getElementById('app').style.display = 'none';
+  showRolePicker();
+}
+function launchApp() {
+  document.getElementById('roleScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('app').style.display = 'block';
+  applyRoleUI();
+  rebuildSelect();
+  const savedWeek = localStorage.getItem('acrapol_currentWeek');
+  if (savedWeek) { document.getElementById('weekSelect').value = savedWeek; applyWeek(); }
+  else { renderTable(); updateProgress(); }
+}
+function applyRoleUI() {
+  // Admin controls visibility
+  document.getElementById('adminBanner').style.display  = isAdmin ? 'flex' : 'none';
+  document.getElementById('btnAddWeek').style.display   = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('btnReset').style.display     = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('thAcciones').style.display   = isAdmin ? '' : 'none';
+  // Promo editable only for admin
+  const promoInput = document.getElementById('promoInput');
+  promoInput.readOnly = !isAdmin;
+  document.getElementById('promoIcon').style.display = isAdmin ? 'inline' : 'none';
+  // Role pill
+  document.getElementById('rolePill').className = 'role-pill ' + (isAdmin ? 'admin' : 'student');
+  document.getElementById('rolePillText').textContent = isAdmin ? '👤 Admin' : '🎓 Alumno';
+}
+
+// ══════════════ DATA ══════════════
+let planificacion = JSON.parse(localStorage.getItem('acrapol_plan') || 'null') || [
+  { semana: 1,  fecha: "17-nov", estudio: "1-5",        repaso1: null,        repaso2: null,       extra: null },
+  { semana: 2,  fecha: "24-nov", estudio: "2-3",        repaso1: null,        repaso2: null,       extra: null },
+  { semana: 3,  fecha: "01-dic", estudio: "4-6",        repaso1: null,        repaso2: null,       extra: null },
+  { semana: 4,  fecha: "08-dic", estudio: "7",          repaso1: null,        repaso2: null,       extra: null },
+  { semana: 5,  fecha: "15-dic", estudio: "8",          repaso1: "1-5",       repaso2: null,       extra: null },
+  { semana: 6,  fecha: "22-dic", estudio: "9-15",       repaso1: "2-3",       repaso2: null,       extra: null },
+  { semana: 7,  fecha: "29-dic", estudio: "10",         repaso1: "4-6",       repaso2: null,       extra: null },
+  { semana: 8,  fecha: "05-ene", estudio: "11",         repaso1: "7",         repaso2: null,       extra: null },
+  { semana: 9,  fecha: "12-ene", estudio: "12-13",      repaso1: "8",         repaso2: null,       extra: null },
+  { semana: 10, fecha: "19-ene", estudio: "14",         repaso1: "9-15",      repaso2: null,       extra: null },
+  { semana: 11, fecha: "26-ene", estudio: "21",         repaso1: "10",        repaso2: null,       extra: null },
+  { semana: 12, fecha: "02-feb", estudio: "16",         repaso1: "11",        repaso2: null,       extra: null },
+  { semana: 13, fecha: "09-feb", estudio: "18",         repaso1: "12-13",     repaso2: null,       extra: null },
+  { semana: 14, fecha: "16-feb", estudio: "17",         repaso1: "14",        repaso2: "1-2",      extra: null },
+  { semana: 15, fecha: "23-feb", estudio: "19-20",      repaso1: "21",        repaso2: "3",        extra: null },
+  { semana: 16, fecha: "02-mar", estudio: "22-23",      repaso1: "16",        repaso2: "4-5",      extra: null },
+  { semana: 17, fecha: "09-mar", estudio: "24-25-26",   repaso1: "18",        repaso2: "6-7",      extra: null },
+  { semana: 18, fecha: "16-mar", estudio: "27-28",      repaso1: "17",        repaso2: "8",        extra: null },
+  { semana: 19, fecha: "23-mar", estudio: "29-30",      repaso1: "19-20",     repaso2: "9-15",     extra: null },
+  { semana: 20, fecha: "30-mar", estudio: "31-32",      repaso1: "22-23",     repaso2: "10",       extra: null },
+  { semana: 21, fecha: "06-abr", estudio: "33-34",      repaso1: "24-25-26",  repaso2: "11",       extra: null },
+  { semana: 22, fecha: "13-abr", estudio: "35-36-37",   repaso1: "27-28",     repaso2: "12-13",    extra: null },
+  { semana: 23, fecha: "20-abr", estudio: "38-39-40",   repaso1: "29-30",     repaso2: "14",       extra: null },
+  { semana: 24, fecha: "27-abr", estudio: "41-42",      repaso1: "31-32",     repaso2: "21",       extra: null },
+  { semana: 25, fecha: "04-may", estudio: "43-44-45",   repaso1: "33-34",     repaso2: "16",       extra: null },
+  { semana: 26, fecha: "11-may", estudio: "LIBRE",      repaso1: null,        repaso2: null,       extra: null },
+  { semana: 27, fecha: "18-may", estudio: "1-5",        repaso1: "35-36",     repaso2: "18",       extra: "MÓD 3" },
+  { semana: 28, fecha: "25-may", estudio: "2-3",        repaso1: "37-38",     repaso2: "17",       extra: null },
+  { semana: 29, fecha: "01-jun", estudio: "4-6",        repaso1: "39-40",     repaso2: "19-20",    extra: null },
+  { semana: 30, fecha: "08-jun", estudio: "7",          repaso1: "41-42",     repaso2: "22-23",    extra: null },
+  { semana: 31, fecha: "15-jun", estudio: "8",          repaso1: "43-44-45",  repaso2: "24-25-26", extra: null },
+  { semana: 32, fecha: "22-jun", estudio: "9-15",       repaso1: "1-5",       repaso2: "27-28",    extra: null },
+  { semana: 33, fecha: "29-jun", estudio: "10",         repaso1: "2-3",       repaso2: "29-30",    extra: null },
+];
+
+let currentWeek = null;
+let completed = new Set(JSON.parse(localStorage.getItem('acrapol_completed') || '[]'));
+let recoveryIntegrated = false;
+let recoveryMap = {};
+let recoveryWeeks = 0;
+let editingIndex = null;
+
+function savePlan()      { localStorage.setItem('acrapol_plan', JSON.stringify(planificacion)); }
+function saveCompleted() { localStorage.setItem('acrapol_completed', JSON.stringify([...completed])); }
+function savePromo()     { if (isAdmin) localStorage.setItem('acrapol_promo', document.getElementById('promoInput').value); }
+
+// ══════════════ RECOVERY MAP ══════════════
+function buildRecoveryMap() {
+  recoveryMap = {};
+  if (!currentWeek || !recoveryIntegrated) return;
+  const pendingTopics = planificacion
+    .filter(w => w.semana < currentWeek && w.estudio && w.estudio !== 'LIBRE')
+    .map(w => w.estudio);
+  if (!pendingTopics.length) return;
+  const futureWeeks = planificacion.filter(w => w.semana >= currentWeek);
+  // Spread only over the number of weeks the student chose
+  const spreadWeeks = futureWeeks.slice(0, recoveryWeeks || futureWeeks.length);
+  const total = spreadWeeks.length;
+  if (!total) return;
+  const base = Math.floor(pendingTopics.length / total);
+  const remainder = pendingTopics.length % total;
+  let idx = 0;
+  spreadWeeks.forEach((w, i) => {
+    const count = base + (i < remainder ? 1 : 0);
+    if (count > 0) { recoveryMap[w.semana] = pendingTopics.slice(idx, idx + count); idx += count; }
+  });
+}
+
+// ══════════════ SELECT ══════════════
+function rebuildSelect() {
+  const sel = document.getElementById('weekSelect');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  planificacion.forEach(w => {
+    const o = document.createElement('option');
+    o.value = w.semana;
+    o.textContent = `Semana ${w.semana}  ·  ${w.fecha}`;
+    sel.appendChild(o);
+  });
+  if (prev) sel.value = prev;
+  document.getElementById('totalWeeksLabel').textContent = planificacion.length;
+}
+
+// ══════════════ APPLY WEEK ══════════════
+function applyWeek() {
+  currentWeek = parseInt(document.getElementById('weekSelect').value);
+  localStorage.setItem('acrapol_currentWeek', currentWeek);
+  recoveryIntegrated = false;
+  recoveryMap = {};
+  const pendingIdx = planificacion.findIndex(w => w.semana === currentWeek);
+  document.getElementById('statCurrent').textContent = `S${currentWeek}`;
+  document.getElementById('statPending').textContent = pendingIdx > 0 ? pendingIdx : 0;
+  if (pendingIdx > 0) showRecoveryPanel(pendingIdx);
+  else document.getElementById('recoveryPanel').classList.remove('show');
+  renderTable();
+  updateProgress();
+}
+
+// ══════════════ RECOVERY ══════════════
+function showRecoveryPanel(pending) {
+  const futureCount = planificacion.filter(w => w.semana >= currentWeek).length;
+  // Default: distribute over all future weeks
+  recoveryWeeks = futureCount;
+
+  document.getElementById('recoveryText').textContent =
+    `Te incorporas en la Semana ${currentWeek}. Tienes ${pending} bloque(s) de temas previos que recuperar. Elige en cuántas semanas quieres distribuirlos.`;
+
+  const grid = document.getElementById('recoveryGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < pending; i++) {
+    const w = planificacion[i];
+    const div = document.createElement('div');
+    div.className = 'recovery-item';
+    let t = [];
+    if (w.estudio && w.estudio !== 'LIBRE') t.push(`📖 T${w.estudio}`);
+    div.innerHTML = `<strong>Semana ${w.semana} · ${w.fecha}</strong><div class="recovery-topics">${t.join('<br>') || '—'}</div>`;
+    grid.appendChild(div);
+  }
+
+  updateRecoveryWeeksUI(futureCount);
+  document.getElementById('recoveryPanel').classList.add('show');
+}
+
+function updateRecoveryWeeksUI(maxWeeks) {
+  document.getElementById('recoveryWeeksVal').textContent = recoveryWeeks;
+  document.getElementById('recWkMinus').disabled = recoveryWeeks <= 1;
+  document.getElementById('recWkPlus').disabled  = recoveryWeeks >= maxWeeks;
+  const pending = planificacion.filter(w => w.semana < currentWeek && w.estudio && w.estudio !== 'LIBRE').length;
+  const perWeek = (pending / recoveryWeeks).toFixed(1);
+  document.getElementById('recoveryWeeksHint').textContent =
+    `≈ ${perWeek} bloque(s) por semana · termina en semana ${planificacion.filter(w => w.semana >= currentWeek)[recoveryWeeks - 1]?.semana ?? '—'}`;
+}
+
+function changeRecoveryWeeks(delta) {
+  const futureCount = planificacion.filter(w => w.semana >= currentWeek).length;
+  recoveryWeeks = Math.max(1, Math.min(futureCount, recoveryWeeks + delta));
+  updateRecoveryWeeksUI(futureCount);
+}
+function dismissRecovery() { document.getElementById('recoveryPanel').classList.remove('show'); }
+function integrateRecovery() {
+  recoveryIntegrated = true;
+  buildRecoveryMap();
+  dismissRecovery();
+  renderTable();
+  toast('✓ Recuperación integrada en tu planificación');
+}
+
+// ══════════════ RENDER TABLE ══════════════
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  planificacion.forEach((w, idx) => {
+    const isCurrent = currentWeek && w.semana === currentWeek;
+    const isPast    = currentWeek && w.semana < currentWeek;
+    const isFuture  = currentWeek && w.semana > currentWeek;
+    const isDone    = completed.has(w.semana);
+    let rc = '';
+    if (isCurrent)         rc = 'row-current';
+    else if (isPast && isDone)  rc = 'row-past-done';
+    else if (isPast)            rc = 'row-past-pending';
+    else if (isFuture)          rc = 'row-future';
+
+    const nowPill = isCurrent ? '<span class="now-pill">HOY</span>' : '';
+    const wkCell  = `<div class="wk-name">${nowPill} Semana ${w.semana}</div><div class="wk-date">${w.fecha}</div>`;
+    let eHTML  = w.estudio === 'LIBRE' ? '<span class="tag tag-libre">LIBRE</span>'
+               : (w.estudio ? `<span class="tag tag-e">T${w.estudio}</span>` : '<span style="color:var(--dim)">—</span>');
+    let r1HTML = w.repaso1 ? `<span class="tag tag-r1">T${w.repaso1}</span>` : '<span style="color:var(--dim)">—</span>';
+    let r2HTML = w.repaso2 ? `<span class="tag tag-r2">T${w.repaso2}</span>` : '<span style="color:var(--dim)">—</span>';
+    let otrosHTML = w.extra ? `<span class="tag tag-mod">${w.extra}</span>` : '<span style="color:var(--dim)">—</span>';
+
+    // Temas a recuperar
+    let recHTML = '<span style="color:var(--dim)">—</span>';
+    if (currentWeek && recoveryIntegrated && recoveryMap[w.semana]) {
+      recHTML = recoveryMap[w.semana].map(t => `<span class="tag tag-rec">T${t}</span>`).join(' ');
+    } else if (currentWeek && !recoveryIntegrated && w.semana === currentWeek) {
+      recHTML = '<span style="color:var(--dim);font-size:11px;font-style:italic">Integra la recuperación</span>';
+    }
+
+    const chk = (!currentWeek || isFuture) ? ''
+      : `<button class="chk ${isDone?'on':''}" onclick="toggleCheck(${w.semana},event)">${isDone?'✓':''}</button>`;
+
+    // Acciones solo admin
+    const actionsCell = isAdmin
+      ? `<td><div style="display:flex;gap:4px;justify-content:center">
+          <button class="btn-icon gold-ic" title="Editar" onclick="openEditModal(${idx})">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon" title="Eliminar" onclick="deleteWeek(${idx})">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+          </button>
+        </div></td>`
+      : '';
+
+    const tr = document.createElement('tr');
+    tr.className = rc;
+    tr.innerHTML = `<td>${wkCell}</td><td>${w.fecha}</td><td>${eHTML}</td><td>${r1HTML}</td><td>${r2HTML}</td><td class="center">${recHTML}</td><td class="center">${otrosHTML}</td><td class="center">${chk}</td>${actionsCell}`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ══════════════ CHECK / PROGRESS ══════════════
+function toggleCheck(week, e) {
+  e.stopPropagation();
+  if (completed.has(week)) completed.delete(week); else completed.add(week);
+  saveCompleted(); renderTable(); updateProgress();
+}
+function updateProgress() {
+  const done = completed.size, total = planificacion.length;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statTotal').textContent = total;
+}
+
+// ══════════════ CRUD (ADMIN ONLY) ══════════════
+function resetPlan() {
+  if (!isAdmin) return;
+  if (!confirm('¿Reiniciar la vista? Se borrará el plan generado, la recuperación integrada y las semanas completadas. El cronograma no se modifica.')) return;
+  currentWeek = null;
+  recoveryIntegrated = false;
+  recoveryMap = {};
+  completed = new Set();
+  localStorage.removeItem('acrapol_currentWeek');
+  localStorage.removeItem('acrapol_completed');
+  document.getElementById('recoveryPanel').classList.remove('show');
+  document.getElementById('weekSelect').selectedIndex = 0;
+  document.getElementById('statCurrent').textContent = '—';
+  document.getElementById('statPending').textContent = '—';
+  document.getElementById('statDone').textContent = '0';
+  renderTable();
+  updateProgress();
+  toast('Vista reiniciada — cronograma limpio');
+}
+function deleteWeek(idx) {
+  if (!isAdmin) return;
+  if (!confirm(`¿Eliminar la Semana ${planificacion[idx].semana}?`)) return;
+  planificacion.splice(idx, 1);
+  savePlan(); rebuildSelect(); renderTable(); updateProgress();
+  toast('Semana eliminada');
+}
+function openAddModal() {
+  if (!isAdmin) return;
+  editingIndex = null;
+  document.getElementById('modalTitle').textContent = 'AÑADIR SEMANA';
+  document.getElementById('modalSaveBtn').textContent = 'Añadir';
+  document.getElementById('fSemana').value = planificacion.length > 0 ? planificacion[planificacion.length-1].semana + 1 : 1;
+  ['fFecha','fEstudio','fRepaso1','fRepaso2','fExtra'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function openEditModal(idx) {
+  if (!isAdmin) return;
+  editingIndex = idx;
+  const w = planificacion[idx];
+  document.getElementById('modalTitle').textContent = `EDITAR SEMANA ${w.semana}`;
+  document.getElementById('modalSaveBtn').textContent = 'Guardar cambios';
+  document.getElementById('fSemana').value  = w.semana;
+  document.getElementById('fFecha').value   = w.fecha   || '';
+  document.getElementById('fEstudio').value = w.estudio || '';
+  document.getElementById('fRepaso1').value = w.repaso1 || '';
+  document.getElementById('fRepaso2').value = w.repaso2 || '';
+  document.getElementById('fExtra').value   = w.extra   || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal()            { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e)    { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+function saveModal() {
+  if (!isAdmin) return;
+  const obj = {
+    semana:  parseInt(document.getElementById('fSemana').value) || planificacion.length + 1,
+    fecha:   document.getElementById('fFecha').value.trim()   || '—',
+    estudio: document.getElementById('fEstudio').value.trim() || null,
+    repaso1: document.getElementById('fRepaso1').value.trim() || null,
+    repaso2: document.getElementById('fRepaso2').value.trim() || null,
+    extra:   document.getElementById('fExtra').value.trim()   || null,
+  };
+  if (editingIndex !== null) { planificacion[editingIndex] = obj; toast('Semana actualizada'); }
+  else { planificacion.push(obj); planificacion.sort((a,b) => a.semana - b.semana); toast('Semana añadida'); }
+  savePlan(); closeModal(); rebuildSelect(); renderTable(); updateProgress();
+}
+
+// ══════════════ TOAST ══════════════
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+
+// ══════════════ TABS ══════════════
+function switchTab(tab) {
+  document.getElementById('tabPlan').classList.toggle('active', tab==='plan');
+  document.getElementById('tabHorario').classList.toggle('active', tab==='horario');
+  document.getElementById('tabBtnPlan').classList.toggle('active', tab==='plan');
+  document.getElementById('tabBtnHorario').classList.toggle('active', tab==='horario');
+
+  // Swap hero content
+  if(tab === 'plan') {
+    document.getElementById('heroEyebrow').textContent = 'Sistema de planificación';
+    document.getElementById('heroTitle').innerHTML = 'Planificación de <span style="color:var(--red)">Estudio</span>';
+    document.getElementById('heroDesc').textContent = 'Gestiona tu incorporación al curso, integra el temario pendiente y sigue tu progreso semana a semana.';
+    document.getElementById('heroStatsPlan').style.display = '';
+    document.getElementById('heroStatsHorario').style.display = 'none';
+  } else {
+    document.getElementById('heroEyebrow').textContent = 'Sistema de planificación';
+    document.getElementById('heroTitle').innerHTML = 'Horario <span style="color:var(--red)">Semanal</span>';
+    document.getElementById('heroDesc').textContent = 'Configura tus horas disponibles y genera un planning diario optimizado con estudio, test, repaso y psicotécnicos.';
+    document.getElementById('heroStatsPlan').style.display = 'none';
+    document.getElementById('heroStatsHorario').style.display = '';
+  }
+}
+
+// ══════════════ HORARIO DATA ══════════════
+const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const HOURS = [];
+for(let h=7; h<31; h++) {
+  const start = h % 24;
+  const end   = (h + 1) % 24;
+  HOURS.push(`${String(start).padStart(2,'0')}:00–${String(end).padStart(2,'0')}:00`);
+}
+
+const TIPOS = [
+  { id:'estudio',  label:'Estudio',  color:'#dbeafe', text:'#1e40af', dot:'#93c5fd' },
+  { id:'test',     label:'Test',     color:'#fef3c7', text:'#92400e', dot:'#fcd34d' },
+  { id:'repaso',   label:'Repaso',   color:'#dcfce7', text:'#166534', dot:'#86efac' },
+  { id:'psico',    label:'Psico',    color:'#ede9fe', text:'#5b21b6', dot:'#c4b5fd' },
+  { id:'descanso', label:'Descanso', color:'#f3f4f6', text:'#6b7280', dot:'#d1d5db' },
+  { id:'libre',    label:'Libre',    color:'',        text:'',        dot:'' },
+];
+
+let dayConfig = { // true = enabled, sub-object for turns
+  0:{on:true,  turns:{m:true,  t:true,  n:true}},  // Lunes
+  1:{on:true,  turns:{m:true,  t:true,  n:false}}, // Martes
+  2:{on:true,  turns:{m:true,  t:true,  n:false}}, // Miércoles
+  3:{on:true,  turns:{m:true,  t:true,  n:false}}, // Jueves
+  4:{on:true,  turns:{m:true,  t:true,  n:false}}, // Viernes
+  5:{on:false, turns:{m:false, t:false, n:false}}, // Sábado
+  6:{on:false, turns:{m:false, t:false, n:false}}, // Domingo
+};
+let totalHours = 44;
+// timetable[dayIdx][hourIdx] = tipo id or ''
+let timetableData = {};
+
+function loadHorario() {
+  const saved = localStorage.getItem('acrapol_horario');
+  if(saved) { try { const d=JSON.parse(saved); dayConfig=d.dayConfig||dayConfig; totalHours=d.totalHours||44; timetableData=d.timetableData||{}; dayHoursAssigned=d.dayHoursAssigned||{}; } catch(e){} }
+}
+function saveHorario() {
+  localStorage.setItem('acrapol_horario', JSON.stringify({dayConfig, totalHours, timetableData, dayHoursAssigned}));
+}
+
+// Turn hour to period: 08-12 mañana, 12-18 tarde, 18-22 noche
+// Hour indices: base 7, so hi=0 → 07:00, hi=7 → 14:00, hi=8 → 15:00 ... hi=15 → 22:00, hi=16 → 23:00, hi=17 → 00:00
+// Break: 14:00–15:00 = hi7 always libre
+// Psico: jueves 17:00–19:00 = hi10, hi11
+// Mañana: 07:00–14:00 (hi 0–6)
+// Tarde: 15:00–22:00 (hi 8–14)  ← 14:00-15:00 is break, not selectable
+// Noche: 00:00–07:00 (hi 17–23)
+
+function hourPeriod(hi) {
+  if(hi >= 0  && hi <= 6)  return 'm';  // Mañana 07:00–14:00
+  if(hi === 7)             return 'break'; // 14:00–15:00 always libre
+  if(hi >= 8  && hi <= 14) return 't';  // Tarde 15:00–22:00
+  if(hi === 15 || hi === 16) return 'break'; // 22:00–00:00 buffer
+  if(hi >= 17 && hi <= 23) return 'n';  // Noche 00:00–07:00
+  return 'break';
+}
+function isBreakSlot(hi) {
+  // 14:00–16:00 always libre = hi7, hi8? No: 14-15=hi7, 15=start of tarde hi8
+  // Per spec: 14:00-16:00 always libre → hi7=14:00-15:00 and hi8=15:00-16:00
+  return hi === 7 || hi === 8;
+}
+function dayHourEnabled(dayIdx, hourIdx) {
+  if(isBreakSlot(hourIdx)) return false;
+  const dc = dayConfig[dayIdx];
+  if(!dc || !dc.on) return false;
+  const p = hourPeriod(hourIdx);
+  if(p === 'break') return false;
+  return !!dc.turns[p];
+}
+
+// ── Build day config UI
+function buildDaysGrid() {
+  const grid = document.getElementById('daysGrid');
+  grid.innerHTML = '';
+  DAYS.forEach((name, di) => {
+    const dc = dayConfig[di];
+    const isJueves = di === 3;
+    const card = document.createElement('div');
+    card.className = 'day-card' + (dc.on ? ' active' : '') + (di===6 ? ' disabled' : '');
+    card.innerHTML = `<div class="day-name">${name.substring(0,3)}</div>
+      <div class="day-turns">
+        <button class="turn-btn${dc.turns.m?' on':''}" onclick="toggleTurn(${di},'m',event)" ${!dc.on?'disabled':''}>Mañana</button>
+        <button class="turn-btn${dc.turns.t?' on':''}" onclick="toggleTurn(${di},'t',event)" ${!dc.on?'disabled':''}>Tarde</button>
+        <button class="turn-btn${dc.turns.n?' on':''}" onclick="toggleTurn(${di},'n',event)" ${!dc.on?'disabled':''}>Noche</button>
+      </div>`;
+    if(di < 6) card.addEventListener('click', (e) => {
+      if(e.target.classList.contains('turn-btn')) return;
+      dayConfig[di].on = !dayConfig[di].on;
+      if(!dayConfig[di].on) { dayConfig[di].turns = {m:false,t:false,n:false}; }
+      else { dayConfig[di].turns = {m:true,t:true,n:false}; }
+      buildDaysGrid(); updateSlider();
+    });
+    grid.appendChild(card);
+  });
+}
+
+function toggleTurn(di, turn, e) {
+  e.stopPropagation();
+  if(!dayConfig[di].on) return;
+  dayConfig[di].turns[turn] = !dayConfig[di].turns[turn];
+  buildDaysGrid(); updateSlider();
+}
+
+// ── Slider
+// per-day hours assigned by the user
+let dayHoursAssigned = {}; // { dayIdx: hours }
+
+function updateSlider() {
+  const sl = document.getElementById('hoursSlider');
+  totalHours = parseInt(sl.value);
+  document.getElementById('sliderVal').textContent = totalHours;
+  const pct = ((totalHours - 4) / (70 - 4) * 100).toFixed(1);
+  sl.style.setProperty('--pct', pct + '%');
+  updateHeroStats();
+  dayHoursAssigned = {}; // reset so buildDayDist recalculates proportionally
+  buildDayDist();
+}
+
+function updateHeroStats() {
+  const psicoH = 2;
+  // At 44h: estudio=28, test=8, repaso=6 (total productive = 42)
+  const ratio = totalHours / 44;
+  const estH  = Math.round(28 * ratio);
+  const testH = Math.round(8  * ratio);
+  const repH  = Math.round(6  * ratio);
+  document.getElementById('hStatSem').textContent  = totalHours+'h';
+  document.getElementById('hStatEst').textContent  = estH+'h';
+  document.getElementById('hStatTest').textContent = testH+'h';
+  document.getElementById('hStatRep').textContent  = repH+'h';
+  document.getElementById('hStatPsi').textContent  = psicoH+'h';
+}
+
+function buildDayDist() {
+  // Count enabled days and available hours per day (slots)
+  const activeDays = DAYS.map((_, di) => di).filter(di => dayConfig[di].on);
+  if (!activeDays.length) {
+    document.getElementById('dayDistPanel').style.display = 'none';
+    return;
+  }
+
+  // Count available slots per day (excluding psico)
+  const slotsPerDay = {};
+  DAYS.forEach((_, di) => {
+    let count = 0;
+    HOURS.forEach((_, hi) => {
+      if(di===3 && (hi===10||hi===11)) return;
+      if(dayHourEnabled(di, hi)) count++;
+    });
+    slotsPerDay[di] = count;
+  });
+
+  const totalSlots = activeDays.reduce((s, di) => s + slotsPerDay[di], 0);
+
+  // Proportional distribution
+  let remaining = totalHours;
+  const newAssigned = {};
+  activeDays.forEach((di, idx) => {
+    if(idx === activeDays.length - 1) {
+      newAssigned[di] = Math.max(0, remaining);
+    } else {
+      const prop = totalSlots > 0
+        ? Math.round((slotsPerDay[di] / totalSlots) * totalHours)
+        : Math.round(totalHours / activeDays.length);
+      const capped = Math.min(prop, slotsPerDay[di]);
+      newAssigned[di] = capped;
+      remaining -= capped;
+    }
+  });
+  // Inactive days = 0
+  DAYS.forEach((_, di) => { if(!dayConfig[di].on) newAssigned[di] = 0; });
+  dayHoursAssigned = newAssigned;
+
+  renderDayDist(slotsPerDay);
+  document.getElementById('dayDistPanel').style.display = 'block';
+}
+
+function renderDayDist(slotsPerDay) {
+  if(!slotsPerDay) {
+    // Recompute slots
+    slotsPerDay = {};
+    DAYS.forEach((_, di) => {
+      let count = 0;
+      HOURS.forEach((_, hi) => {
+        if(di===3 && (hi===10||hi===11)) return;
+        if(dayHourEnabled(di, hi)) count++;
+      });
+      slotsPerDay[di] = count;
+    });
+  }
+  const grid = document.getElementById('dayDistGrid');
+  grid.innerHTML = '';
+
+  DAYS.forEach((name, di) => {
+    const active = dayConfig[di].on;
+    const hours = dayHoursAssigned[di] || 0;
+    const maxH = slotsPerDay[di] || 0;
+
+    // Turn labels
+    const dc = dayConfig[di];
+    const turns = [];
+    if(dc.turns.m) turns.push('M');
+    if(dc.turns.t) turns.push('T');
+    if(dc.turns.n) turns.push('N');
+
+    const card = document.createElement('div');
+    card.className = 'dist-card' + (!active ? ' inactive' : '');
+    card.innerHTML = `
+      <div class="dist-day-name">${name.substring(0,3)}</div>
+      <div class="dist-hours-row">
+        <button class="dist-btn" onclick="changeDayHours(${di},-1)" ${!active||hours<=0?'disabled':''}>−</button>
+        <div class="dist-val">${hours}</div>
+        <button class="dist-btn" onclick="changeDayHours(${di},1)" ${!active||hours>=maxH?'disabled':''}>+</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;">horas</div>`;
+    grid.appendChild(card);
+  });
+
+  updateDistSummary(slotsPerDay);
+}
+
+function changeDayHours(di, delta) {
+  const slotsPerDay = {};
+  DAYS.forEach((_, d) => {
+    let count = 0;
+    HOURS.forEach((_, hi) => {
+      if(d===3 && (hi===10||hi===11)) return;
+      if(dayHourEnabled(d, hi)) count++;
+    });
+    slotsPerDay[d] = count;
+  });
+
+  const newVal = (dayHoursAssigned[di] || 0) + delta;
+  if(newVal < 0 || newVal > (slotsPerDay[di] || 0)) return;
+
+  // Check total won't exceed totalHours
+  const currentTotal = Object.values(dayHoursAssigned).reduce((s, v) => s + v, 0);
+  if(delta > 0 && currentTotal >= totalHours) return;
+
+  dayHoursAssigned[di] = newVal;
+  renderDayDist(slotsPerDay);
+}
+
+function updateDistSummary(slotsPerDay) {
+  const assigned = Object.values(dayHoursAssigned).reduce((s, v) => s + v, 0);
+  document.getElementById('distAssigned').textContent = assigned + 'h';
+  document.getElementById('distTotal').textContent = totalHours + 'h';
+  const warn = document.getElementById('distWarning');
+  warn.style.display = assigned !== totalHours ? 'block' : 'none';
+}
+
+// ── Generate timetable
+function generateTimetable() {
+  const assigned = Object.values(dayHoursAssigned).reduce((s, v) => s + v, 0);
+  if (assigned !== totalHours) {
+    if (!confirm(`El total asignado (${assigned}h) no coincide con las horas semanales (${totalHours}h). ¿Generar igualmente con ${assigned}h?`)) return;
+  }
+
+  // Proportions: estudio≈63.6%, test≈18.2%, repaso≈13.6% (28/8/6 out of 42h)
+  const EST_RATIO  = 28 / 42;
+  const TEST_RATIO = 8  / 42;
+  const REP_RATIO  = 6  / 42;
+
+  timetableData = {};
+  DAYS.forEach((_,di) => { timetableData[di] = {}; });
+
+  DAYS.forEach((_, di) => {
+    const dc = dayConfig[di];
+    if(!dc || !dc.on) return;
+    const dayTotal = dayHoursAssigned[di] || 0;
+    if(!dayTotal) return;
+
+    // Gather available slots per period, ordered by hi
+    const slotsByPeriod = { m:[], t:[], n:[] };
+    HOURS.forEach((_, hi) => {
+      if(di===3 && (hi===10||hi===11)) return;
+      if(isBreakSlot(hi)) return;
+      const p = hourPeriod(hi);
+      if(p !== 'break' && dc.turns[p]) slotsByPeriod[p].push(hi);
+    });
+
+    const totalSlots = slotsByPeriod.m.length + slotsByPeriod.t.length + slotsByPeriod.n.length;
+    if(!totalSlots) return;
+
+    // Build contiguous ordered list of slots for this day, proportional per period
+    const daySlots = [];
+    let remaining = dayTotal;
+    const activePeriods = ['m','t','n'].filter(p => dc.turns[p] && slotsByPeriod[p].length > 0);
+    activePeriods.forEach((p, idx) => {
+      const periodSlots = slotsByPeriod[p].length;
+      let take = idx === activePeriods.length - 1
+        ? remaining
+        : Math.round((periodSlots / totalSlots) * dayTotal);
+      take = Math.min(take, periodSlots, remaining);
+      slotsByPeriod[p].slice(0, take).forEach(hi => daySlots.push(hi));
+      remaining -= take;
+    });
+
+    const n = daySlots.length;
+    if(!n) return;
+
+    // Calculate how many of each tipo for this day
+    const dayEst  = Math.round(n * EST_RATIO);
+    const dayTest = Math.round(n * TEST_RATIO);
+    const dayRep  = Math.max(0, n - dayEst - dayTest);
+
+    // Build a tipo list and interleave evenly using Bresenham-style distribution
+    // e.g. for 7h: [E,E,E,E,T,T,R] → spread evenly → E,E,T,E,E,T,R
+    const tipoPool = [
+      ...Array(dayEst).fill('estudio'),
+      ...Array(dayTest).fill('test'),
+      ...Array(dayRep).fill('repaso'),
+    ];
+
+    // Interleave: sort so types alternate as evenly as possible
+    // Strategy: assign each slot a "score" based on its type proportion, then sort
+    const interleaved = interleaveTypes(tipoPool);
+
+    daySlots.forEach((hi, idx) => {
+      if(interleaved[idx]) timetableData[di][hi] = interleaved[idx];
+    });
+  });
+
+  // Fixed psico jueves 17:00–19:00
+  timetableData[3][10] = 'psico';
+  timetableData[3][11] = 'psico';
+
+  saveHorario();
+  renderTimetable();
+  document.getElementById('timetableSection').style.display = 'block';
+  document.getElementById('timetableSection').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Evenly interleave an array of tipos using a round-robin style distribution
+// e.g. [E,E,E,E,T,T,R] → [E,T,E,R,E,T,E]
+function interleaveTypes(pool) {
+  // Count each type
+  const counts = {};
+  pool.forEach(t => { counts[t] = (counts[t]||0) + 1; });
+  const types = Object.keys(counts).sort((a,b) => counts[b]-counts[a]); // most frequent first
+  const total = pool.length;
+  const result = new Array(total).fill('');
+
+  // Use Bresenham line algorithm per type to distribute evenly
+  types.forEach(tipo => {
+    const n = counts[tipo];
+    let placed = 0;
+    for(let i=0; i<total && placed<n; i++) {
+      // Place at positions where this type "belongs" proportionally
+      if(result[i] === '') {
+        const progress = placed / n;
+        const expected = i / total;
+        if(expected >= progress - 1/total) {
+          result[i] = tipo;
+          placed++;
+        }
+      }
+    }
+    // Fill remaining if any left
+    for(let i=0; i<total && placed<n; i++) {
+      if(result[i]==='') { result[i]=tipo; placed++; }
+    }
+  });
+  return result;
+}
+
+// ── Render timetable
+function renderTimetable() {
+  const table = document.getElementById('timetable');
+  table.innerHTML = '';
+
+  const thead = document.createElement('thead');
+  let thRow = '<tr><th class="hour-col">Hora</th>';
+  DAYS.forEach((d,di) => {
+    const on = dayConfig[di].on;
+    thRow += `<th style="${!on?'opacity:.4':''}">${d.substring(0,3).toUpperCase()}</th>`;
+  });
+  thRow += '</tr>';
+  thead.innerHTML = thRow;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  HOURS.forEach((hour, hi) => {
+    const isBreak = isBreakSlot(hi);
+    const tr = document.createElement('tr');
+
+    if(isBreak) {
+      tr.style.background = '#fafafa';
+    }
+
+    tr.innerHTML = `<td class="hour-label">${hour}</td>`;
+
+    DAYS.forEach((_, di) => {
+      const td = document.createElement('td');
+      const isPsico = di===3 && (hi===10||hi===11) && (timetableData[3]||{})[hi] === 'psico';
+
+      if(isPsico) {
+        td.className = 'psico-fixed';
+        td.innerHTML = `<div class="cell-block tipo-psico">Psico</div>`;
+      } else if(!dayHourEnabled(di, hi) && !isBreak) {
+        td.className = 'disabled-day';
+      } else {
+        // Normal cell (including break slots — editable, just starts empty)
+        const tipo = (timetableData[di]||{})[hi] || '';
+        td.setAttribute('data-di', di);
+        td.setAttribute('data-hi', hi);
+
+        if(tipo && tipo !== 'descanso') {
+          const t = TIPOS.find(x=>x.id===tipo);
+          if(t) {
+            const block = document.createElement('div');
+            block.className = `cell-block tipo-${tipo}`;
+            block.textContent = t.label;
+            block.draggable = true;
+            block.addEventListener('dragstart', onDragStart);
+            block.addEventListener('click', onCellClick);
+            td.appendChild(block);
+          }
+        }
+        td.addEventListener('dragover', e => e.preventDefault());
+        td.addEventListener('drop', onDrop);
+        td.addEventListener('click', (e) => {
+          if(!e.target.classList.contains('cell-block')) onEmptyCellClick(td);
+        });
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  updateDescansoLabel();
+}
+
+// ── Drag & drop
+let dragSrc = null;
+function onDragStart(e) {
+  dragSrc = this;
+  this.classList.add('drag-ghost');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDrop(e) {
+  e.preventDefault();
+  if(!dragSrc || dragSrc.parentNode === this) { if(dragSrc) dragSrc.classList.remove('drag-ghost'); return; }
+  const srcTd = dragSrc.parentNode;
+  const dstTd = this;
+  const srcDi = parseInt(srcTd.dataset.di), srcHi = parseInt(srcTd.dataset.hi);
+  const dstDi = parseInt(dstTd.dataset.di), dstHi = parseInt(dstTd.dataset.hi);
+  if(isNaN(srcDi)||isNaN(dstDi)) { dragSrc.classList.remove('drag-ghost'); return; }
+  // Swap
+  const tmp = (timetableData[srcDi]||{})[srcHi];
+  if(!timetableData[srcDi]) timetableData[srcDi]={};
+  if(!timetableData[dstDi]) timetableData[dstDi]={};
+  timetableData[srcDi][srcHi] = (timetableData[dstDi]||{})[dstHi] || '';
+  timetableData[dstDi][dstHi] = tmp;
+  dragSrc.classList.remove('drag-ghost');
+  dragSrc = null;
+  saveHorario(); renderTimetable();
+}
+
+// ── Cell click: show tipo picker
+let openPicker = null;
+function onCellClick(e) {
+  e.stopPropagation();
+  closeAllPickers();
+  const block = this;
+  const td = block.parentNode;
+  const di = parseInt(td.dataset.di), hi = parseInt(td.dataset.hi);
+  showPicker(td, di, hi);
+}
+function onEmptyCellClick(td) {
+  closeAllPickers();
+  const di = parseInt(td.dataset.di), hi = parseInt(td.dataset.hi);
+  showPicker(td, di, hi);
+}
+function showPicker(td, di, hi) {
+  const picker = document.createElement('div');
+  picker.className = 'cell-picker open';
+  // Only show Estudio, Test, Repaso, Psico + Vaciar (no Descanso)
+  const pickerTipos = TIPOS.filter(t => t.id !== 'descanso');
+  pickerTipos.forEach(t => {
+    const opt = document.createElement('div');
+    opt.className = 'cell-option';
+    opt.innerHTML = t.id !== 'libre'
+      ? `<span class="dot" style="background:${t.dot}"></span>${t.label}`
+      : `<span class="dot" style="background:#e5e7eb"></span>Vaciar`;
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(!timetableData[di]) timetableData[di]={};
+      timetableData[di][hi] = t.id==='libre' ? '' : t.id;
+      saveHorario(); closeAllPickers(); renderTimetable();
+    });
+    picker.appendChild(opt);
+  });
+  td.style.position = 'relative';
+  td.appendChild(picker);
+  openPicker = picker;
+  setTimeout(() => document.addEventListener('click', closeAllPickers, {once:true}), 0);
+}
+function closeAllPickers() {
+  document.querySelectorAll('.cell-picker').forEach(p => p.remove());
+  openPicker = null;
+}
+
+function updateDescansoLabel() {
+  let libre = 0;
+  DAYS.forEach((_, di) => {
+    HOURS.forEach((_, hi) => {
+      if(isBreakSlot(hi)) return;
+      if(!dayHourEnabled(di, hi)) return;
+      const tipo = (timetableData[di]||{})[hi] || '';
+      if(!tipo || tipo === 'descanso') libre++;
+    });
+  });
+  document.getElementById('descansoLabel').innerHTML = libre > 0
+    ? `<span style="color:var(--muted);font-weight:500;">✦ ${libre} horas libres sin asignar</span>`
+    : `<span style="color:var(--green);font-weight:600;">✓ Todas las horas asignadas</span>`;
+}
+
+function resetTimetable() {
+  if(!confirm('¿Eliminar todas las actividades de la tabla?')) return;
+  // Wipe all activity data completely
+  timetableData = {};
+  DAYS.forEach((_, di) => { timetableData[di] = {}; });
+  saveHorario();
+  // Keep section visible and re-render blank table
+  document.getElementById('timetableSection').style.display = 'block';
+  renderTimetable();
+}
+
+// Init horario
+loadHorario();
+buildDaysGrid();
+document.getElementById('hoursSlider').value = totalHours;
+updateSlider();
+if(Object.keys(timetableData).length > 0) {
+  document.getElementById('timetableSection').style.display = 'block';
+  renderTimetable();
+}
+
+// ══════════════ INIT ══════════════
+const savedPromo = localStorage.getItem('acrapol_promo');
+if (savedPromo) document.getElementById('promoInput').value = savedPromo;
+
+// Check session
+const savedRole = sessionStorage.getItem('acrapol_role');
+if (savedRole === 'admin') { isAdmin = true; launchApp(); }
+else if (savedRole === 'student') { isAdmin = false; launchApp(); }
+else { showRolePicker(); }
+</script>
+</body>
+</html>
