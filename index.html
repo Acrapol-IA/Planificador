@@ -803,7 +803,7 @@ input[type=range]::-webkit-slider-thumb {
                 <th>Repaso 1</th>
                 <th>Repaso 2</th>
                 <th class="center">Temas a Recuperar</th>
-                <th class="center">Otros</th>
+                <th class="center">Curso</th>
                 <th class="center">✓</th>
                 <th class="center" id="thAcciones" style="display:none">Acciones</th>
               </tr>
@@ -993,8 +993,15 @@ input[type=range]::-webkit-slider-thumb {
           <input class="form-input" id="fRepaso2" type="text" placeholder="Ej: 8">
         </div>
         <div class="form-group">
-          <label class="form-label">Otros</label>
-          <input class="form-input" id="fExtra" type="text" placeholder="Ej: MÓD 4">
+          <label class="form-label">Curso</label>
+          <select class="form-input" id="fExtra">
+            <option value="">— Sin curso —</option>
+            <option value="MÓD 1">MÓD 1</option>
+            <option value="MÓD 2">MÓD 2</option>
+            <option value="MÓD 3">MÓD 3</option>
+            <option value="INT">INT</option>
+            <option value="MÓD 3 / INT">MÓD 3 / INT</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-label">Estado de la semana</label>
