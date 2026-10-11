@@ -763,7 +763,7 @@ input[type=range]::-webkit-slider-thumb {
         <div style="display:flex;gap:8px;align-items:center">
           <button class="btn btn-ghost btn-sm" id="btnReset" onclick="resetPlan()" style="display:none">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Reiniciar vista
+            Eliminar semanas
           </button>
           <button class="btn btn-ghost btn-sm" id="btnAddWeek" onclick="openAddModal()" style="display:none">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -995,6 +995,16 @@ input[type=range]::-webkit-slider-thumb {
         <div class="form-group">
           <label class="form-label">Otros</label>
           <input class="form-input" id="fExtra" type="text" placeholder="Ej: MÓD 4">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado de la semana</label>
+          <select class="form-input" id="fEstado">
+            <option value="">— Normal —</option>
+            <option value="descanso">DESCANSO</option>
+            <option value="libre">LIBRE</option>
+            <option value="recuperar">RECUPERAR</option>
+            <option value="descanso_recuperar">DESCANSO O RECUPERAR</option>
+          </select>
         </div>
       </div>
     </div>
@@ -1332,19 +1342,6 @@ function renderTable() {
 
     const nowPill = isCurrent ? '<span class="now-pill">HOY</span>' : '';
     const wkCell  = `<div class="wk-name">${nowPill} Semana ${w.semana}</div>`;
-    let eHTML  = w.estudio === 'LIBRE' ? '<span class="tag tag-libre">LIBRE</span>'
-               : (w.estudio ? `<span class="tag tag-e">T${w.estudio}</span>` : '<span style="color:var(--dim)">—</span>');
-    let r1HTML = w.repaso1 ? `<span class="tag tag-r1">T${w.repaso1}</span>` : '<span style="color:var(--dim)">—</span>';
-    let r2HTML = w.repaso2 ? `<span class="tag tag-r2">T${w.repaso2}</span>` : '<span style="color:var(--dim)">—</span>';
-    let otrosHTML = w.extra ? `<span class="tag tag-mod">${w.extra}</span>` : '<span style="color:var(--dim)">—</span>';
-
-    // Temas a recuperar
-    let recHTML = '<span style="color:var(--dim)">—</span>';
-    if (currentWeek && recoveryIntegrated && recoveryMap[w.semana]) {
-      recHTML = recoveryMap[w.semana].map(t => `<span class="tag tag-rec">T${t}</span>`).join(' ');
-    } else if (currentWeek && !recoveryIntegrated && w.semana === currentWeek) {
-      recHTML = '<span style="color:var(--dim);font-size:11px;font-style:italic">Integra la recuperación</span>';
-    }
 
     const chk = (!currentWeek || isFuture) ? ''
       : `<button class="chk ${isDone?'on':''}" onclick="toggleCheck(${w.semana},event)">${isDone?'✓':''}</button>`;
@@ -1360,6 +1357,39 @@ function renderTable() {
           </button>
         </div></td>`
       : '';
+
+    // Estado especial de semana (DESCANSO / LIBRE / RECUPERAR / etc.)
+    const ESTADO_LABELS = { descanso:'DESCANSO', libre:'LIBRE', recuperar:'RECUPERAR', descanso_recuperar:'DESCANSO O RECUPERAR' };
+    const ESTADO_COLORS = {
+      descanso:          { bg:'#e5e7eb', color:'#374151' },
+      libre:             { bg:'#bbf0d0', color:'#14532d' },
+      recuperar:         { bg:'#fde8b8', color:'#92400e' },
+      descanso_recuperar:{ bg:'#fed7aa', color:'#9a3412' },
+    };
+
+    if (w.estado && ESTADO_LABELS[w.estado]) {
+      const ec = ESTADO_COLORS[w.estado];
+      const estadoSpan = `<div style="background:${ec.bg};color:${ec.color};border-radius:8px;padding:8px 0;font-size:12px;font-weight:700;letter-spacing:1.5px;text-align:center;width:100%">${ESTADO_LABELS[w.estado]}</div>`;
+      const tr = document.createElement('tr');
+      tr.className = rc;
+      tr.innerHTML = `<td>${wkCell}</td><td>${w.fecha}</td><td colspan="5" style="padding:6px 8px">${estadoSpan}</td><td class="center">${chk}</td>${actionsCell}`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    let eHTML  = w.estudio === 'LIBRE' ? '<span class="tag tag-libre">LIBRE</span>'
+               : (w.estudio ? `<span class="tag tag-e">T${w.estudio}</span>` : '<span style="color:var(--dim)">—</span>');
+    let r1HTML = w.repaso1 ? `<span class="tag tag-r1">T${w.repaso1}</span>` : '<span style="color:var(--dim)">—</span>';
+    let r2HTML = w.repaso2 ? `<span class="tag tag-r2">T${w.repaso2}</span>` : '<span style="color:var(--dim)">—</span>';
+    let otrosHTML = w.extra ? `<span class="tag tag-mod">${w.extra}</span>` : '<span style="color:var(--dim)">—</span>';
+
+    // Temas a recuperar
+    let recHTML = '<span style="color:var(--dim)">—</span>';
+    if (currentWeek && recoveryIntegrated && recoveryMap[w.semana]) {
+      recHTML = recoveryMap[w.semana].map(t => `<span class="tag tag-rec">T${t}</span>`).join(' ');
+    } else if (currentWeek && !recoveryIntegrated && w.semana === currentWeek) {
+      recHTML = '<span style="color:var(--dim);font-size:11px;font-style:italic">Integra la recuperación</span>';
+    }
 
     const tr = document.createElement('tr');
     tr.className = rc;
@@ -1383,7 +1413,8 @@ function updateProgress() {
 // ══════════════ CRUD (ADMIN ONLY) ══════════════
 function resetPlan() {
   if (!isAdmin) return;
-  if (!confirm('¿Reiniciar la vista? Se borrará el plan generado, la recuperación integrada y las semanas completadas. El cronograma no se modifica.')) return;
+  if (!confirm('¿Eliminar TODAS las semanas del cronograma? Esta acción no se puede deshacer.')) return;
+  planificacion = [];
   currentWeek = null;
   recoveryIntegrated = false;
   recoveryMap = {};
@@ -1391,13 +1422,11 @@ function resetPlan() {
   localStorage.removeItem('acrapol_currentWeek');
   localStorage.removeItem('acrapol_completed');
   document.getElementById('recoveryPanel').classList.remove('show');
-  document.getElementById('weekSelect').selectedIndex = 0;
   document.getElementById('statCurrent').textContent = '—';
   document.getElementById('statPending').textContent = '—';
   document.getElementById('statDone').textContent = '0';
-  renderTable();
-  updateProgress();
-  toast('Vista reiniciada — cronograma limpio');
+  savePlan(); rebuildSelect(); renderTable(); updateProgress();
+  toast('Todas las semanas eliminadas');
 }
 function deleteWeek(idx) {
   if (!isAdmin) return;
@@ -1413,6 +1442,7 @@ function openAddModal() {
   document.getElementById('modalSaveBtn').textContent = 'Añadir';
   document.getElementById('fSemana').value = planificacion.length > 0 ? planificacion[planificacion.length-1].semana + 1 : 1;
   ['fFecha','fEstudio','fRepaso1','fRepaso2','fExtra'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fEstado').value = '';
   document.getElementById('modalOverlay').classList.add('open');
 }
 function openEditModal(idx) {
@@ -1427,6 +1457,7 @@ function openEditModal(idx) {
   document.getElementById('fRepaso1').value = w.repaso1 || '';
   document.getElementById('fRepaso2').value = w.repaso2 || '';
   document.getElementById('fExtra').value   = w.extra   || '';
+  document.getElementById('fEstado').value  = w.estado  || '';
   document.getElementById('modalOverlay').classList.add('open');
 }
 function closeModal()            { document.getElementById('modalOverlay').classList.remove('open'); }
@@ -1440,6 +1471,7 @@ function saveModal() {
     repaso1: document.getElementById('fRepaso1').value.trim() || null,
     repaso2: document.getElementById('fRepaso2').value.trim() || null,
     extra:   document.getElementById('fExtra').value.trim()   || null,
+    estado:  document.getElementById('fEstado').value         || null,
   };
   if (editingIndex !== null) { planificacion[editingIndex] = obj; toast('Semana actualizada'); }
   else { planificacion.push(obj); planificacion.sort((a,b) => a.semana - b.semana); toast('Semana añadida'); }
