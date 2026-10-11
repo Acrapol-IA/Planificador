@@ -393,11 +393,13 @@ tr.row-future { opacity: .45; }
 .avail-table td.avail-cell.on { background: #fee2e2; }
 .avail-table td.avail-cell.on::after {
   content: '✓'; font-size: 11px; font-weight: 700; color: var(--red);
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  line-height: 28px;
 }
 .avail-table td.avail-cell.break-row { background: var(--bg3); cursor: not-allowed; }
 .avail-table td.avail-cell.break-row:hover { background: var(--bg3); }
 .avail-table td.avail-cell.psico-row { background: #ede9fe; cursor: not-allowed; }
-.avail-table td.avail-cell.psico-row::after { content: '⚡'; font-size: 10px; }
+.avail-table td.avail-cell.psico-row::after { content: '⚡'; font-size: 10px; position: absolute; inset: 0; line-height: 28px; }
 .avail-table td.avail-cell.off-day { background: repeating-linear-gradient(-45deg,#f9fafb,#f9fafb 3px,#f3f4f6 3px,#f3f4f6 6px); cursor: not-allowed; }
 .avail-table tr.turn-section-start td { border-top: 2px solid var(--border2); }
 .avail-table tr.gap-row td { background: var(--bg3) !important; cursor: not-allowed !important; }
@@ -515,11 +517,10 @@ input[type=range]::-webkit-slider-thumb {
 
 /* Cell block */
 .cell-block {
-  width: 100%; height: 100%;
-  position: absolute; inset: 0;
+  position: absolute; inset: 3px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
-  cursor: grab; user-select: none; border-radius: 8px;
+  cursor: grab; user-select: none; border-radius: 6px;
   transition: opacity .12s, transform .12s; text-align: center; line-height: 1.2;
 }
 .cell-block:hover { opacity: .85; }
@@ -768,6 +769,14 @@ input[type=range]::-webkit-slider-thumb {
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             Añadir semana
           </button>
+          <button class="btn btn-red btn-sm" id="btnAddCourse" onclick="openAddCourseModal()" style="display:none">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Añadir curso
+          </button>
+          <button class="btn btn-ghost btn-sm" id="btnSaveCloud" onclick="savePlanToSupabase()" style="display:none">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 20H6a2 2 0 0 1-2-2V8l6-6h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+            Guardar en nube
+          </button>
         </div>
       </div>
       <div class="panel">
@@ -996,9 +1005,90 @@ input[type=range]::-webkit-slider-thumb {
   </div>
 </div>
 
+<!-- MODAL AÑADIR CURSO -->
+<div class="modal-overlay" id="courseModalOverlay" onclick="if(event.target===this)closeCourseModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">AÑADIR CURSO</div>
+      <button class="modal-close" onclick="closeCourseModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.5;">
+        Indica la fecha de inicio del curso y el número de semanas. Se generarán automáticamente todas las semanas con sus fechas.
+      </p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Fecha de inicio (lunes)</label>
+          <input class="form-input" id="cFechaInicio" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número de semanas del curso</label>
+          <input class="form-input" id="cNumSemanas" type="number" min="1" max="60" placeholder="Ej: 30" value="30">
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6;" id="cPreview">
+        Selecciona una fecha para ver la previsualización.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCourseModal()">Cancelar</button>
+      <button class="btn btn-red" onclick="saveCourse()">Generar curso</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// ══════════════ SUPABASE ══════════════
+const SB_URL = 'https://ifwnjosxoisupidbnnom.supabase.co';
+const SB_KEY = 'sb_publishable_YbYLK-w0CM4IQUclCXDbZA_dlpwG33I';
+
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(SB_URL + path, {
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || '',
+      ...opts.headers
+    },
+    method: opts.method || 'GET',
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.status === 204 ? null : res.json();
+}
+
+async function loadPlanFromSupabase() {
+  try {
+    const rows = await sbFetch('/rest/v1/planificacion?id=eq.1&select=data');
+    if (rows && rows[0] && Array.isArray(rows[0].data) && rows[0].data.length > 0) {
+      planificacion = rows[0].data;
+      rebuildSelect();
+      renderTable();
+      updateProgress();
+      console.log('Plan cargado desde Supabase:', planificacion.length, 'semanas');
+    }
+  } catch(e) {
+    console.warn('No se pudo cargar el plan desde Supabase:', e.message);
+  }
+}
+
+async function savePlanToSupabase() {
+  try {
+    await sbFetch('/rest/v1/planificacion?id=eq.1', {
+      method: 'PATCH',
+      prefer: 'return=minimal',
+      body: { data: planificacion },
+    });
+    toast('✓ Guardado en la nube');
+  } catch(e) {
+    console.error('Error guardando en Supabase:', e.message);
+    toast('⚠ Error al guardar en la nube');
+  }
+}
+
 // ══════════════ AUTH ══════════════
 const ADMIN_PASS = 'BrunoPedro2026';
 let isAdmin = false;
@@ -1050,12 +1140,19 @@ function launchApp() {
   const savedWeek = localStorage.getItem('acrapol_currentWeek');
   if (savedWeek) { document.getElementById('weekSelect').value = savedWeek; applyWeek(); }
   else { renderTable(); updateProgress(); }
+  // Cargar plan desde Supabase (sobreescribe localStorage si hay datos en la nube)
+  loadPlanFromSupabase().then(() => {
+    const sw = localStorage.getItem('acrapol_currentWeek');
+    if (sw) { document.getElementById('weekSelect').value = sw; applyWeek(); }
+  });
 }
 function applyRoleUI() {
   // Admin controls visibility
   document.getElementById('adminBanner').style.display  = isAdmin ? 'flex' : 'none';
-  document.getElementById('btnAddWeek').style.display   = isAdmin ? 'inline-flex' : 'none';
-  document.getElementById('btnReset').style.display     = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('btnAddWeek').style.display    = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('btnAddCourse').style.display   = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('btnSaveCloud').style.display   = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('btnReset').style.display      = isAdmin ? 'inline-flex' : 'none';
   document.getElementById('thAcciones').style.display   = isAdmin ? '' : 'none';
   // Promo editable only for admin
   const promoInput = document.getElementById('promoInput');
@@ -1110,7 +1207,10 @@ let recoveryMap = {};
 let recoveryWeeks = 0;
 let editingIndex = null;
 
-function savePlan()      { localStorage.setItem('acrapol_plan', JSON.stringify(planificacion)); }
+function savePlan() {
+  localStorage.setItem('acrapol_plan', JSON.stringify(planificacion));
+  if (isAdmin) savePlanToSupabase();
+}
 function saveCompleted() { localStorage.setItem('acrapol_completed', JSON.stringify([...completed])); }
 function savePromo()     { if (isAdmin) localStorage.setItem('acrapol_promo', document.getElementById('promoInput').value); }
 
@@ -1231,7 +1331,7 @@ function renderTable() {
     else if (isFuture)          rc = 'row-future';
 
     const nowPill = isCurrent ? '<span class="now-pill">HOY</span>' : '';
-    const wkCell  = `<div class="wk-name">${nowPill} Semana ${w.semana}</div><div class="wk-date">${w.fecha}</div>`;
+    const wkCell  = `<div class="wk-name">${nowPill} Semana ${w.semana}</div>`;
     let eHTML  = w.estudio === 'LIBRE' ? '<span class="tag tag-libre">LIBRE</span>'
                : (w.estudio ? `<span class="tag tag-e">T${w.estudio}</span>` : '<span style="color:var(--dim)">—</span>');
     let r1HTML = w.repaso1 ? `<span class="tag tag-r1">T${w.repaso1}</span>` : '<span style="color:var(--dim)">—</span>';
@@ -1345,6 +1445,90 @@ function saveModal() {
   else { planificacion.push(obj); planificacion.sort((a,b) => a.semana - b.semana); toast('Semana añadida'); }
   savePlan(); closeModal(); rebuildSelect(); renderTable(); updateProgress();
 }
+
+// ══════════════ AÑADIR CURSO ══════════════
+const MONTH_NAMES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+function weekRangeLabel(monday) {
+  // monday: Date object (always a Monday)
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const d1 = monday.getDate(), m1 = monday.getMonth();
+  const d2 = sunday.getDate(), m2 = sunday.getMonth();
+  if (m1 === m2) {
+    return `${d1}-${d2} ${MONTH_NAMES[m1]}`;
+  } else {
+    return `${d1} ${MONTH_NAMES[m1]} - ${d2} ${MONTH_NAMES[m2]}`;
+  }
+}
+
+function openAddCourseModal() {
+  if (!isAdmin) return;
+  // Default to next Monday
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? 1 : (8 - day) % 7 || 7;
+  const nextMonday = new Date(today);
+  nextMonday.setDate(today.getDate() + (diff === 0 ? 0 : diff));
+  document.getElementById('cFechaInicio').value = nextMonday.toISOString().slice(0,10);
+  updateCoursePreview();
+  document.getElementById('courseModalOverlay').classList.add('open');
+}
+
+function closeCourseModal() {
+  document.getElementById('courseModalOverlay').classList.remove('open');
+}
+
+function updateCoursePreview() {
+  const fechaVal = document.getElementById('cFechaInicio').value;
+  const numSem   = parseInt(document.getElementById('cNumSemanas').value) || 0;
+  const preview  = document.getElementById('cPreview');
+  if (!fechaVal || !numSem) { preview.textContent = 'Selecciona una fecha y número de semanas.'; return; }
+  const start = new Date(fechaVal + 'T00:00:00');
+  // Ensure it's treated as local date
+  const labels = [];
+  for (let i = 0; i < Math.min(numSem, 4); i++) {
+    const monday = new Date(start);
+    monday.setDate(start.getDate() + i * 7);
+    labels.push(`Semana ${i+1}: ${weekRangeLabel(monday)}`);
+  }
+  if (numSem > 4) labels.push(`… hasta Semana ${numSem}: ${weekRangeLabel(new Date(start.getTime() + (numSem-1)*7*86400000))}`);
+  preview.innerHTML = labels.join('<br>');
+}
+
+function saveCourse() {
+  if (!isAdmin) return;
+  const fechaVal = document.getElementById('cFechaInicio').value;
+  const numSem   = parseInt(document.getElementById('cNumSemanas').value) || 0;
+  if (!fechaVal || numSem < 1) { alert('Indica una fecha de inicio y el número de semanas.'); return; }
+  if (planificacion.length > 0) {
+    if (!confirm('Esto reemplazará el cronograma actual. ¿Continuar?')) return;
+  }
+  const start = new Date(fechaVal + 'T00:00:00');
+  planificacion = [];
+  for (let i = 0; i < numSem; i++) {
+    const monday = new Date(start);
+    monday.setDate(start.getDate() + i * 7);
+    planificacion.push({
+      semana:  i + 1,
+      fecha:   weekRangeLabel(monday),
+      estudio: null,
+      repaso1: null,
+      repaso2: null,
+      extra:   null,
+    });
+  }
+  savePlan(); closeCourseModal(); rebuildSelect(); renderTable(); updateProgress();
+  toast(`✓ Curso generado: ${numSem} semanas`);
+}
+
+// Live preview on input change — attached after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  const fi = document.getElementById('cFechaInicio');
+  const fn = document.getElementById('cNumSemanas');
+  if (fi) fi.addEventListener('input', updateCoursePreview);
+  if (fn) fn.addEventListener('input', updateCoursePreview);
+});
 
 // ══════════════ TOAST ══════════════
 function toast(msg) {
@@ -2078,42 +2262,51 @@ function downloadPDF() {
 
   const activeDays = DAYS.map((_,di)=>di).filter(di=>dayConfig[di]&&dayConfig[di].on);
 
-  // Build print HTML
+  // Build rows — cards fill the whole cell via absolute positioning
   let rows = '';
   HOURS.forEach((hour, hi) => {
     if(isBreakSlot(hi)) return;
+    let hasContent = activeDays.some(di => {
+      const t = (timetableData[di]||{})[hi];
+      return t && t !== 'descanso' && TIPOS_MAP[t];
+    });
+    // Skip completely empty rows (no assignment any day)
     let tds = `<td class="hl">${hour}</td>`;
     activeDays.forEach(di => {
       const tipo = (timetableData[di]||{})[hi]||'';
       if(tipo && tipo !== 'descanso' && TIPOS_MAP[tipo]) {
-        tds += `<td><span class="pill t-${tipo}">${TIPOS_MAP[tipo]}</span></td>`;
+        const bg = TIPO_BG[tipo]||'#eee';
+        const fg = TIPO_FG[tipo]||'#333';
+        tds += `<td class="data-cell"><div class="card" style="background:${bg};color:${fg};-webkit-print-color-adjust:exact;print-color-adjust:exact">${TIPOS_MAP[tipo]}</div></td>`;
       } else {
-        tds += `<td></td>`;
+        tds += `<td class="data-cell"></td>`;
       }
     });
     rows += `<tr>${tds}</tr>`;
   });
 
-  const heads = activeDays.map(di=>`<th>${DAYS[di]}</th>`).join('');
+  const heads = activeDays.map(di=>`<th>${DAYS[di].toUpperCase()}</th>`).join('');
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>Horario semanal · ACRAPOL</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,sans-serif;padding:20px;background:#fff;color:#111}
+  body{font-family:Arial,sans-serif;padding:20px;background:#fff;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   h1{font-size:15px;font-weight:700;margin-bottom:14px;letter-spacing:.5px}
-  table{border-collapse:collapse;width:100%;font-size:11px}
-  th,td{border:1px solid #e5e7eb;padding:4px 6px;text-align:center;vertical-align:middle}
-  th{background:#f3f4f6;font-weight:600;font-size:10px;letter-spacing:.5px}
-  td.hl{text-align:left;color:#9ca3af;font-size:10px;width:44px}
-  .pill{display:inline-block;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap}
-  .t-estudio{background:#ffd6dc;color:#c0002f;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .t-test   {background:#fde8b8;color:#92400e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .t-repaso {background:#bbf0d0;color:#14532d;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .t-psico  {background:#e9d5ff;color:#5b21b6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .legend{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
-  .leg{display:flex;align-items:center;gap:5px;font-size:10px}
-  .leg-dot{width:10px;height:10px;border-radius:3px}
+  table{border-collapse:collapse;width:100%;font-size:11px;table-layout:fixed}
+  th,td{border:1px solid #e5e7eb;text-align:center;vertical-align:middle}
+  th{background:#f3f4f6 !important;font-weight:700;font-size:10px;letter-spacing:1px;padding:6px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  td.hl{text-align:center;color:#9ca3af;font-size:10px;width:60px;padding:0 4px;font-family:monospace}
+  td.data-cell{padding:3px;height:36px;position:relative}
+  .card{
+    position:absolute;inset:3px;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact
+  }
+  .legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .leg{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600}
+  .leg-dot{width:12px;height:12px;border-radius:3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @media print{
     body{padding:10px}
     @page{size:A4 landscape;margin:1cm}
@@ -2122,7 +2315,7 @@ function downloadPDF() {
 </head><body>
 <h1>Tu horario semanal · ACRAPOL</h1>
 <table>
-  <thead><tr><th>Hora</th>${heads}</tr></thead>
+  <thead><tr><th>HORA</th>${heads}</tr></thead>
   <tbody>${rows}</tbody>
 </table>
 <div class="legend">
