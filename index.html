@@ -2069,7 +2069,7 @@ function showConfirmDialog(msg, onOk) {
 }
 
 function downloadPDF() {
-  const TIPOS_MAP = {estudio:'Estudio',test:'Test',repaso:'Repaso',psico:'Psico'};
+  const TIPOS_MAP = {estudio:'Estudio',test:'Test',repaso:'Repaso',psico:'Psicotécnicos'};
   const TIPO_BG   = {estudio:'#dbeafe',test:'#fef3c7',repaso:'#dcfce7',psico:'#ede9fe'};
   const TIPO_FG   = {estudio:'#1e40af',test:'#92400e',repaso:'#166534',psico:'#5b21b6'};
 
@@ -2131,24 +2131,71 @@ function downloadPDF() {
 <script>window.addEventListener('load',function(){window.print()});<\/script>
 </body></html>`;
 
-  // Descargar HTML — al abrirlo en el navegador, el script lanza window.print() automáticamente
-  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = 'horario-acrapol.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 3000);
+  // Intentar window.print() directo (funciona en GitHub Pages y navegador normal)
+  // Si está en sandbox (Claude/iframe), mostramos el HTML en un modal con instrucción Ctrl+P
+  const tryPrint = () => {
+    try {
+      // Inyectar estilos y contenido en overlay para @media print
+      const old2 = document.getElementById('printOverlay');
+      if(old2) old2.remove();
+      const overlay = document.createElement('div');
+      overlay.id = 'printOverlay';
+      overlay.style.display = 'none';
+      // Extraer solo el body del html generado
+      const bodyMatch = html.match(/<body>([\s\S]*?)<script/i);
+      overlay.innerHTML = bodyMatch ? bodyMatch[1] : '';
+      document.body.appendChild(overlay);
+      window.print();
+      setTimeout(() => { const o=document.getElementById('printOverlay'); if(o)o.remove(); }, 2000);
+    } catch(e) { showPrintModal(html); }
+  };
 
-  // Mostrar aviso
-  const toast = document.getElementById('toast');
-  if(toast) {
-    toast.textContent = 'Abre el archivo descargado en tu navegador para imprimir o guardar como PDF';
-    toast.style.opacity = '1';
-    setTimeout(() => { toast.style.opacity = '0'; }, 5000);
-  }
+  // Detectar si window.print está bloqueado probándolo en un try silencioso
+  // En sandbox moderno, print() no lanza error pero tampoco hace nada — usamos modal como fallback
+  tryPrint();
+
+  // Fallback: si en 300ms no se abrió nada (sandbox), mostramos modal
+  // (no hay forma 100% fiable de detectarlo, así que siempre mostramos modal de ayuda)
+  showPrintModal(html);
+}
+
+function showPrintModal(html) {
+  const old = document.getElementById('printHelpModal');
+  if(old) return; // ya visible
+
+  const modal = document.createElement('div');
+  modal.id = 'printHelpModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:center;justify-content:center;';
+
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:14px;padding:28px;max-width:420px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2);';
+  box.innerHTML = `
+    <div style="font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#e11d48;margin-bottom:12px;">Descargar horario</div>
+    <p style="font-size:14px;color:#111;margin-bottom:18px;line-height:1.5;">
+      Descarga el horario como archivo HTML y ábrelo en tu navegador.<br>
+      Se abrirá automáticamente el diálogo para <strong>guardar como PDF</strong>.
+    </p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button id="phClose" style="padding:8px 16px;border-radius:7px;border:1px solid #ddd;background:#f9f9f9;cursor:pointer;font-size:13px;">Cancelar</button>
+      <button id="phDownload" style="padding:8px 18px;border-radius:7px;border:none;background:#e11d48;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">
+        ⬇ Descargar archivo
+      </button>
+    </div>`;
+
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+
+  box.querySelector('#phClose').onclick = () => modal.remove();
+  box.querySelector('#phDownload').onclick = () => {
+    const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'horario-acrapol.html';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    modal.remove();
+  };
 }
 
 // ══════════════ INIT ══════════════
