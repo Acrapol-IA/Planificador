@@ -259,15 +259,153 @@ tr.row-future { opacity: .45; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-@media(max-width:640px){
-  .header-inner { height: auto; padding: 12px 16px; flex-wrap: wrap; }
-  .hero-inner { flex-direction: column; align-items: flex-start; }
-  .hero-stats { width: 100%; }
-  .main { padding: 16px; }
+@media(max-width:768px){
+  /* ── General ── */
+  body { overflow-x: hidden; }
+
+  /* ── Header ── */
+  .header-inner { height: auto; padding: 10px 16px; flex-wrap: wrap; gap: 10px; }
+  .header-inner .logo-text { font-size: 16px; letter-spacing: 2px; }
+  .tab-nav { padding: 0 8px; overflow-x: auto; white-space: nowrap; max-width: 100vw; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 10px 12px; font-size: 11px; }
+
+  /* ── Hero strip ── */
+  .hero-strip { padding: 20px 16px; }
+  .hero-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .hero-stats { width: 100%; display: flex; flex-wrap: wrap; gap: 0; overflow-x: auto; }
+  .hstat { min-width: 72px; padding: 12px 16px; }
+  .hstat .hstat-num { font-size: 22px; }
+
+  /* ── Main content ── */
+  .main { padding: 14px 12px 48px; }
+  .horario-wrap { padding: 14px 12px 48px; }
+
+  /* ── Selector / planificación ── */
+  .selector-inner { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 12px; }
+  .selector-inner select { min-width: unset; width: 100%; }
+
+  /* ── Recovery grid ── */
+  .recovery-grid { grid-template-columns: 1fr 1fr; }
+  .recovery-actions { flex-direction: column; }
+
+  /* ── Plan table ── */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 520px; }
+  table th, table td { font-size: 11px; padding: 6px 8px; }
+
+  /* ── Forms ── */
   .form-grid { grid-template-columns: 1fr; }
-  .hero-strip { padding: 24px 16px; }
   .role-cards { grid-template-columns: 1fr; }
+  .modal { margin: 12px; max-width: calc(100vw - 24px); }
+
+  /* ── Hero desc ── */
+  .hero-desc { font-size: 13px; }
+
+  /* ── Section heads ── */
+  .section-head { flex-direction: column; align-items: flex-start; }
+
+  /* ── Horario semanal ── */
+  .h-stat { min-width: 64px; padding: 10px 14px; }
+  .days-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .timetable-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .timetable { min-width: 600px; }
+  .timetable td, .timetable th { font-size: 10px; padding: 4px 6px; }
+
+  /* ── Slider ── */
+  .slider-label { min-width: unset; font-size: 10px; }
+  .slider-val { font-size: 22px; min-width: 44px; }
+  .range-labels { font-size: 9px; }
+  .slider-row { flex-wrap: wrap; gap: 10px; }
+
+  /* ── Distribution grid ── */
+  .dist-val { font-size: 18px; }
+
+  /* ── Legend ── */
+  .h-legend { gap: 8px; }
+
+  /* ── Login/role boxes ── */
+  .login-box { padding: 28px 20px; margin: 0 16px; }
+  .role-box { padding: 24px 16px; margin: 0 16px; }
 }
+
+@media(max-width:480px){
+  .days-grid { grid-template-columns: repeat(3, 1fr); }
+  .recovery-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 0; }
+  .hstat { min-width: 60px; padding: 10px 12px; }
+  .hstat .hstat-num { font-size: 18px; }
+  table { min-width: 420px; }
+  .timetable { min-width: 480px; }
+}
+
+/* ═══ PSICO LEVEL PICKER ═══ */
+.psico-level-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.psico-card {
+  border: 1.5px solid var(--border2); border-radius: 8px; padding: 16px 12px;
+  text-align: center; cursor: pointer; transition: all .15s; user-select: none;
+  background: var(--bg);
+}
+.psico-card:hover { border-color: var(--red); background: #fff5f5; }
+.psico-card.active { border-color: var(--red); background: #fff5f5; box-shadow: 0 0 0 1px var(--red); }
+.psico-icon { font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+.psico-card.active .psico-icon { color: var(--red); }
+.psico-name { font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.psico-desc { font-size: 11px; color: var(--red); }
+
+/* ═══ AVAILABILITY TABLE ═══ */
+.avail-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }
+.avail-table { border-collapse: collapse; width: 100%; min-width: 560px; }
+.avail-table th.avail-time-col { width: 64px; }
+.avail-table th {
+  background: var(--bg2); padding: 8px 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); text-align: center;
+  border-bottom: 2px solid var(--border2); border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+.avail-table th .day-label {
+  font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
+  letter-spacing: 1px; color: var(--text); display: block; margin-bottom: 6px;
+}
+.avail-table th .turn-btns { display: flex; gap: 3px; justify-content: center; }
+.avail-turn-btn {
+  width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border2);
+  background: var(--bg); cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: all .12s; font-size: 11px; padding: 0;
+  color: var(--muted);
+}
+.avail-turn-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+.avail-turn-btn.partial { border-color: var(--red); color: var(--red); }
+.avail-turn-btn.full { background: var(--red); border-color: var(--red2); color: #fff; }
+.avail-turn-btn:disabled { opacity: .3; cursor: not-allowed; }
+.avail-table td.avail-time {
+  background: var(--bg2); font-family: 'Source Code Pro', monospace;
+  font-size: 10px; color: var(--muted); font-weight: 500; padding: 0 8px;
+  text-align: right; white-space: nowrap; border-right: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border);
+}
+.avail-table td.avail-cell {
+  border: 1px solid var(--border); height: 28px; text-align: center; vertical-align: middle;
+  cursor: pointer; transition: background .1s; user-select: none; position: relative;
+}
+.avail-table td.avail-cell:hover { background: #fff0f0; }
+.avail-table td.avail-cell.on { background: #fee2e2; }
+.avail-table td.avail-cell.on::after {
+  content: '✓'; font-size: 11px; font-weight: 700; color: var(--red);
+}
+.avail-table td.avail-cell.break-row { background: var(--bg3); cursor: not-allowed; }
+.avail-table td.avail-cell.break-row:hover { background: var(--bg3); }
+.avail-table td.avail-cell.psico-row { background: #ede9fe; cursor: not-allowed; }
+.avail-table td.avail-cell.psico-row::after { content: '⚡'; font-size: 10px; }
+.avail-table td.avail-cell.off-day { background: repeating-linear-gradient(-45deg,#f9fafb,#f9fafb 3px,#f3f4f6 3px,#f3f4f6 6px); cursor: not-allowed; }
+.avail-table tr.turn-section-start td { border-top: 2px solid var(--border2); }
+.avail-table tr.gap-row td { background: var(--bg3) !important; cursor: not-allowed !important; }
+.avail-table tr.gap-row td.avail-time { color: var(--dim); font-style: italic; }
+/* Section labels on left side */
+.avail-table td.avail-time.section-m { color: #ea580c; font-weight: 700; }
+.avail-table td.avail-time.section-t { color: #2563eb; font-weight: 700; }
+.avail-table td.avail-time.section-n { color: #7c3aed; font-weight: 700; }
 
 /* ═══ TAB NAV ═══ */
 .tab-nav {
@@ -429,6 +567,21 @@ input[type=range]::-webkit-slider-thumb {
 
 /* Note */
 .h-note { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-top: 8px; }
+
+/* Print */
+@media print {
+  body > *:not(#printOverlay) { display: none !important; }
+  #printOverlay { display: block !important; position: static !important; background: white; }
+  #printOverlay table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  #printOverlay th, #printOverlay td { border: 1px solid #ccc; padding: 4px 7px; text-align: center; }
+  #printOverlay th { background: #f3f4f6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printOverlay .cell-block { border-radius: 3px; padding: 2px 5px; font-size: 11px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printOverlay .tipo-estudio { background: #dbeafe !important; color: #1e40af !important; }
+  #printOverlay .tipo-test    { background: #fef3c7 !important; color: #92400e !important; }
+  #printOverlay .tipo-repaso  { background: #dcfce7 !important; color: #166534 !important; }
+  #printOverlay .tipo-psico   { background: #ede9fe !important; color: #5b21b6 !important; }
+  #printOverlay .tipo-descanso{ background: #f3f4f6 !important; color: #6b7280 !important; }
+}
 
 </style>
 </head>
@@ -656,6 +809,36 @@ input[type=range]::-webkit-slider-thumb {
 <div class="tab-content" id="tabHorario">
 <div class="horario-wrap">
 
+  <!-- NIVEL PSICOTÉCNICOS -->
+  <div class="h-section">
+    <div class="h-panel">
+      <div class="h-panel-header">
+        <svg width="13" height="13" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <span class="h-panel-title">¿Cuál es tu nivel de psicotécnicos?</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted);">Lo utilizaremos para saber cuántas horas de psicotécnicos incluir en tu horario.</span>
+      </div>
+      <div class="h-panel-body" style="padding:16px 20px;">
+        <div class="psico-level-grid">
+          <div class="psico-card" id="psicoCard-alto" onclick="setPsicoLevel('alto')">
+            <div class="psico-icon">▲</div>
+            <div class="psico-name">Alto</div>
+            <div class="psico-desc">No me preocupa</div>
+          </div>
+          <div class="psico-card active" id="psicoCard-normal" onclick="setPsicoLevel('normal')">
+            <div class="psico-icon">●</div>
+            <div class="psico-name">Normal</div>
+            <div class="psico-desc">En la media</div>
+          </div>
+          <div class="psico-card" id="psicoCard-bajo" onclick="setPsicoLevel('bajo')">
+            <div class="psico-icon">▼</div>
+            <div class="psico-name">Bajo</div>
+            <div class="psico-desc">Tengo que entrenarlos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- CONFIGURACIÓN -->
   <div class="h-section">
     <div class="h-panel">
@@ -665,16 +848,8 @@ input[type=range]::-webkit-slider-thumb {
       </div>
       <div class="h-panel-body">
 
-        <!-- Days -->
-        <div style="margin-bottom:6px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Días disponibles para estudiar</div>
-        <div class="days-grid" id="daysGrid" style="margin-bottom:20px;"></div>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.8;">
-          Mañanas: 07:00–14:00 &nbsp;·&nbsp; Tardes: 15:00–22:00 &nbsp;·&nbsp; Noches: 00:00–07:00<br>
-          ⚠ Los psicotécnicos se asignan siempre los jueves 17:00–19:00 h
-        </p>
-
-        <!-- Slider -->
-        <div class="slider-row">
+        <!-- Slider: always on top -->
+        <div class="slider-row" style="margin-bottom:20px;">
           <div style="text-align:center;min-width:70px;">
             <div class="slider-val"><span id="sliderVal">44</span><span style="font-size:14px">h</span></div>
             <span class="slider-sub">horas/semana</span>
@@ -684,23 +859,41 @@ input[type=range]::-webkit-slider-thumb {
               <span style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;">Horas semanales de estudio</span>
             </div>
             <input type="range" id="hoursSlider" min="4" max="70" value="44" oninput="updateSlider()">
-            <div class="range-labels"><span>4h</span><span class="marker">★ 44h dedicación exclusiva</span></div>
+          </div>
+          <!-- Remaining hours counter -->
+          <div style="text-align:center;min-width:64px;">
+            <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:600;line-height:1;" id="hoursRemaining">44</div>
+            <span style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-top:2px;">restantes</span>
           </div>
         </div>
 
-        <!-- Day distribution -->
-        <div id="dayDistPanel" style="display:none;margin-top:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-            <span style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Distribución por día</span>
-            <span style="font-size:12px;color:var(--muted);">Total asignado: <strong id="distAssigned" style="color:var(--red)">0h</strong> / <strong id="distTotal">0h</strong></span>
-          </div>
-          <div id="dayDistGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;"></div>
-          <div id="distWarning" style="display:none;margin-top:10px;font-size:12px;color:var(--red);font-weight:600;">
-            ⚠ El total asignado no coincide con las horas semanales
+        <!-- Availability table -->
+        <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">¿Qué horas tienes disponibles para estudiar?</div>
+            <div style="font-size:11px;color:var(--red);">Haz clic en las horas disponibles o usa los botones rápidos de turno</div>
           </div>
         </div>
 
-        <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+        <div class="avail-wrap">
+          <table class="avail-table" id="availTable">
+            <thead><tr id="availHeadRow"></tr></thead>
+            <tbody id="availBody"></tbody>
+          </table>
+        </div>
+
+        <p style="font-size:11px;color:var(--muted);margin-top:10px;margin-bottom:20px;line-height:1.8;">
+          Mañanas: 07:00–14:00 &nbsp;·&nbsp; Tardes: 15:00–22:00 &nbsp;·&nbsp; Noches: 23:00–06:00
+        </p>
+
+        <!-- Day distribution: invisible, only used internally by JS -->
+        <div id="dayDistPanel" style="display:none!important;visibility:hidden;height:0;overflow:hidden;">
+          <div id="dayDistGrid"></div>
+          <span id="distAssigned"></span><span id="distTotal"></span>
+          <div id="distWarning"></div>
+        </div>
+
+        <div style="margin-top:4px;display:flex;justify-content:flex-end;">
           <button class="btn btn-red" onclick="generateTimetable()">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
             Generar horario
@@ -721,6 +914,10 @@ input[type=range]::-webkit-slider-thumb {
         <button class="btn btn-ghost btn-sm" onclick="resetTimetable()">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
           Reiniciar
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="downloadPDF()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar horario
         </button>
         <div class="h-legend">
           <div class="h-leg"><div class="h-leg-dot" style="background:#dbeafe;border:1px solid #93c5fd"></div>Estudio</div>
@@ -1195,25 +1392,56 @@ const TIPOS = [
   { id:'libre',    label:'Libre',    color:'',        text:'',        dot:'' },
 ];
 
-let dayConfig = { // true = enabled, sub-object for turns
-  0:{on:true,  turns:{m:true,  t:true,  n:true}},  // Lunes
-  1:{on:true,  turns:{m:true,  t:true,  n:false}}, // Martes
-  2:{on:true,  turns:{m:true,  t:true,  n:false}}, // Miércoles
-  3:{on:true,  turns:{m:true,  t:true,  n:false}}, // Jueves
-  4:{on:true,  turns:{m:true,  t:true,  n:false}}, // Viernes
-  5:{on:false, turns:{m:false, t:false, n:false}}, // Sábado
-  6:{on:false, turns:{m:false, t:false, n:false}}, // Domingo
-};
+// availData[dayIdx][hourIdx] = true if that slot is available
+// Derived from availability table clicks
+let availData = {};
+// Initialize from dayConfig defaults (mañana+tarde = hi 0-6 y 9-14, no noche)
+(function initAvail() {
+  for(let di=0; di<7; di++) {
+    availData[di] = {};
+    for(let hi=0; hi<24; hi++) {
+      availData[di][hi] = false; // all deselected by default
+    }
+  }
+})();
+
+// Derived dayConfig from availData (for compatibility with rest of code)
+let dayConfig = {};
+function rebuildDayConfig() {
+  for(let di=0; di<7; di++) {
+    const ad = availData[di] || {};
+    let hasM=false, hasT=false, hasN=false, hasAny=false;
+    for(let hi=0; hi<24; hi++) {
+      if(!ad[hi]) continue;
+      const p = hourPeriodStatic(hi);
+      if(p==='m') hasM=true;
+      if(p==='t') hasT=true;
+      if(p==='n') hasN=true;
+      hasAny=true;
+    }
+    dayConfig[di] = { on: hasAny, turns: {m:hasM, t:hasT, n:hasN} };
+  }
+}
 let totalHours = 44;
 // timetable[dayIdx][hourIdx] = tipo id or ''
 let timetableData = {};
 
 function loadHorario() {
   const saved = localStorage.getItem('acrapol_horario');
-  if(saved) { try { const d=JSON.parse(saved); dayConfig=d.dayConfig||dayConfig; totalHours=d.totalHours||44; timetableData=d.timetableData||{}; dayHoursAssigned=d.dayHoursAssigned||{}; } catch(e){} }
+  if(saved) {
+    try {
+      const d=JSON.parse(saved);
+      // availData is NOT restored — calendar always starts empty each session
+      totalHours=d.totalHours||44;
+      timetableData=d.timetableData||{};
+      dayHoursAssigned=d.dayHoursAssigned||{};
+      if(d.psicoLevel) psicoLevel=d.psicoLevel;
+      rebuildDayConfig();
+    } catch(e){}
+  }
 }
 function saveHorario() {
-  localStorage.setItem('acrapol_horario', JSON.stringify({dayConfig, totalHours, timetableData, dayHoursAssigned}));
+  localStorage.setItem('acrapol_horario', JSON.stringify({availData, totalHours, timetableData, dayHoursAssigned, psicoLevel}));
 }
 
 // Turn hour to period: 08-12 mañana, 12-18 tarde, 18-22 noche
@@ -1224,59 +1452,185 @@ function saveHorario() {
 // Tarde: 15:00–22:00 (hi 8–14)  ← 14:00-15:00 is break, not selectable
 // Noche: 00:00–07:00 (hi 17–23)
 
-function hourPeriod(hi) {
-  if(hi >= 0  && hi <= 6)  return 'm';  // Mañana 07:00–14:00
-  if(hi === 7)             return 'break'; // 14:00–15:00 always libre
-  if(hi >= 8  && hi <= 14) return 't';  // Tarde 15:00–22:00
-  if(hi === 15 || hi === 16) return 'break'; // 22:00–00:00 buffer
-  if(hi >= 17 && hi <= 23) return 'n';  // Noche 00:00–07:00
-  return 'break';
+function hourPeriodStatic(hi) {
+  // hi=0→07:00 … hi=23→06:00
+  if(hi >= 0  && hi <= 7)  return 'm';  // Mañana  07:00–15:00 (incl. 14:00)
+  if(hi >= 8  && hi <= 15) return 't';  // Tarde   15:00–23:00 (incl. 22:00)
+  if(hi >= 16 && hi <= 22) return 'n';  // Noche   23:00–06:00
+  if(hi === 23)            return '';   // 06:00 gap only
+  return '';
 }
-function isBreakSlot(hi) {
-  // 14:00–16:00 always libre = hi7, hi8? No: 14-15=hi7, 15=start of tarde hi8
-  // Per spec: 14:00-16:00 always libre → hi7=14:00-15:00 and hi8=15:00-16:00
-  return hi === 7 || hi === 8;
-}
+function isBreakSlotStatic(hi) { return false; } // no locked slots
+function hourPeriod(hi)   { return hourPeriodStatic(hi); }
+function isBreakSlot(hi)  { return isBreakSlotStatic(hi); }
 function dayHourEnabled(dayIdx, hourIdx) {
   if(isBreakSlot(hourIdx)) return false;
-  const dc = dayConfig[dayIdx];
-  if(!dc || !dc.on) return false;
-  const p = hourPeriod(hourIdx);
-  if(p === 'break') return false;
-  return !!dc.turns[p];
+  if(hourPeriod(hourIdx) === 'break') return false;
+  return !!(availData[dayIdx] && availData[dayIdx][hourIdx]);
 }
 
-// ── Build day config UI
-function buildDaysGrid() {
-  const grid = document.getElementById('daysGrid');
-  grid.innerHTML = '';
-  DAYS.forEach((name, di) => {
-    const dc = dayConfig[di];
-    const isJueves = di === 3;
-    const card = document.createElement('div');
-    card.className = 'day-card' + (dc.on ? ' active' : '') + (di===6 ? ' disabled' : '');
-    card.innerHTML = `<div class="day-name">${name.substring(0,3)}</div>
-      <div class="day-turns">
-        <button class="turn-btn${dc.turns.m?' on':''}" onclick="toggleTurn(${di},'m',event)" ${!dc.on?'disabled':''}>Mañana</button>
-        <button class="turn-btn${dc.turns.t?' on':''}" onclick="toggleTurn(${di},'t',event)" ${!dc.on?'disabled':''}>Tarde</button>
-        <button class="turn-btn${dc.turns.n?' on':''}" onclick="toggleTurn(${di},'n',event)" ${!dc.on?'disabled':''}>Noche</button>
-      </div>`;
-    if(di < 6) card.addEventListener('click', (e) => {
-      if(e.target.classList.contains('turn-btn')) return;
-      dayConfig[di].on = !dayConfig[di].on;
-      if(!dayConfig[di].on) { dayConfig[di].turns = {m:false,t:false,n:false}; }
-      else { dayConfig[di].turns = {m:true,t:true,n:false}; }
-      buildDaysGrid(); updateSlider();
-    });
-    grid.appendChild(card);
+// ── Psico level
+let psicoLevel = 'normal'; // 'alto'=1h, 'normal'=2h, 'bajo'=3h
+function psicoHours() { return psicoLevel==='alto' ? 1 : psicoLevel==='bajo' ? 3 : 2; }
+function setPsicoLevel(level) {
+  psicoLevel = level;
+  ['alto','normal','bajo'].forEach(l => {
+    document.getElementById('psicoCard-'+l).classList.toggle('active', l===level);
   });
+  updateHeroStats();
+  saveHorario();
 }
 
-function toggleTurn(di, turn, e) {
+// ── Availability table
+const AVAIL_HOUR_LABELS = [];
+for(let h=7; h<31; h++) {
+  const s = h % 24;
+  AVAIL_HOUR_LABELS.push(`${String(s).padStart(2,'0')}:00`);
+}
+// Section boundaries: first hour of each period
+const SECTION_START = { m:0, t:9, n:17 }; // hi indices where new section starts
+
+function buildAvailTable() {
+  const thead = document.getElementById('availHeadRow');
+  const tbody = document.getElementById('availBody');
+  if(!thead || !tbody) return;
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  // Header: time col + one col per day
+  const thTime = document.createElement('th');
+  thTime.className = 'avail-time-col';
+  thead.appendChild(thTime);
+
+  DAYS.forEach((name, di) => {
+    const th = document.createElement('th');
+    // Turn state for quick btns
+    const ad = availData[di] || {};
+    const mSlots = HOURS.map((_,hi)=>hi).filter(hi=>!isBreakSlot(hi)&&hourPeriod(hi)==='m');
+    const tSlots = HOURS.map((_,hi)=>hi).filter(hi=>!isBreakSlot(hi)&&hourPeriod(hi)==='t');
+    const nSlots = HOURS.map((_,hi)=>hi).filter(hi=>!isBreakSlot(hi)&&hourPeriod(hi)==='n');
+    const mOn = mSlots.filter(hi=>ad[hi]).length;
+    const tOn = tSlots.filter(hi=>ad[hi]).length;
+    const nOn = nSlots.filter(hi=>ad[hi]).length;
+    const mState = mOn===0?'':mOn===mSlots.length?'full':'partial';
+    const tState = tOn===0?'':tOn===tSlots.length?'full':'partial';
+    const nState = nOn===0?'':nOn===nSlots.length?'full':'partial';
+    const disabled = '';
+    th.innerHTML = `
+      <span class="day-label">${name.substring(0,3).toUpperCase()}</span>
+      <div class="turn-btns">
+        <button class="avail-turn-btn ${mState}" title="Mañana" onclick="toggleTurnAvail(${di},'m',event)" ${disabled}>☀</button>
+        <button class="avail-turn-btn ${tState}" title="Tarde"  onclick="toggleTurnAvail(${di},'t',event)" ${disabled}>🌤</button>
+        <button class="avail-turn-btn ${nState}" title="Noche"  onclick="toggleTurnAvail(${di},'n',event)" ${disabled}>🌙</button>
+      </div>`;
+    thead.appendChild(th);
+  });
+
+  // Body rows: one per hour
+  // hi=0→07:00 … hi=23→06:00
+  // Gap rows (transitions): hi=7(14:00), hi=15(22:00), hi=23(06:00)
+  // Section starts: hi=0(07:00/M), hi=8(15:00/T), hi=16(23:00/N)
+  const GAP_HI    = new Set([23]); // only 06:00 is a gap; 14:00 and 22:00 are selectable
+  const SECSTART  = new Set([0, 8, 16]);
+
+  HOURS.forEach((label, hi) => {
+    const isGap    = GAP_HI.has(hi);
+    const period   = hourPeriod(hi);
+    const isSecStart = SECSTART.has(hi);
+
+    const tr = document.createElement('tr');
+    const cls = [];
+    if(isSecStart) cls.push('turn-section-start');
+    if(isGap)      cls.push('gap-row');
+    if(cls.length) tr.className = cls.join(' ');
+
+    // Time cell
+    const tdTime = document.createElement('td');
+    tdTime.className = 'avail-time' + (period==='m'?' section-m':period==='t'?' section-t':period==='n'?' section-n':'');
+    tdTime.textContent = AVAIL_HOUR_LABELS[hi];
+    tr.appendChild(tdTime);
+
+    DAYS.forEach((_, di) => {
+      const td = document.createElement('td');
+      if(isGap) {
+        td.className = 'avail-cell break-row';
+      } else {
+        const isOn = !!(availData[di] && availData[di][hi]);
+        td.className = 'avail-cell' + (isOn ? ' on' : '');
+        td.onclick = () => toggleCellAvail(di, hi);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  updateAvailCount();
+}
+
+function countSelected() {
+  let c=0;
+  for(let di=0;di<7;di++) for(let hi=0;hi<24;hi++) if(availData[di]&&availData[di][hi]) c++;
+  return c;
+}
+
+function toggleCellAvail(di, hi) {
+  if(!availData[di]) availData[di] = {};
+  const isOn = availData[di][hi];
+  // Block if trying to add but already at limit
+  if(!isOn && countSelected() >= totalHours) {
+    flashLimit(); return;
+  }
+  availData[di][hi] = !isOn;
+  rebuildDayConfig();
+  buildAvailTable();
+  buildDayDist();
+  saveHorario();
+}
+
+function toggleTurnAvail(di, turn, e) {
   e.stopPropagation();
-  if(!dayConfig[di].on) return;
-  dayConfig[di].turns[turn] = !dayConfig[di].turns[turn];
-  buildDaysGrid(); updateSlider();
+  const ad = availData[di] || {};
+  const slots = HOURS.map((_,hi)=>hi).filter(hi=>!isBreakSlot(hi)&&hourPeriod(hi)===turn);
+  const allOn = slots.every(hi=>ad[hi]);
+  if(!availData[di]) availData[di]={};
+  if(allOn) {
+    // Deselect all in this turn
+    slots.forEach(hi=>{ availData[di][hi] = false; });
+  } else {
+    // Select only as many as the remaining quota allows
+    const remaining = totalHours - countSelected();
+    let added = 0;
+    slots.forEach(hi=>{
+      if(!availData[di][hi]) {
+        if(added < remaining) { availData[di][hi] = true; added++; }
+      }
+    });
+    if(added === 0 && remaining === 0) { flashLimit(); }
+  }
+  rebuildDayConfig();
+  buildAvailTable();
+  buildDayDist();
+  saveHorario();
+}
+
+function flashLimit() {
+  const el = document.getElementById('hoursRemaining');
+  if(!el) return;
+  el.style.transition = 'color .1s';
+  el.textContent = '✗';
+  el.style.color = 'var(--red)';
+  setTimeout(() => { updateAvailCount(); }, 800);
+}
+
+function updateAvailCount() {
+  let count=0;
+  for(let di=0;di<7;di++) { for(let hi=0;hi<24;hi++) { if(availData[di]&&availData[di][hi]) count++; } }
+  const rem = totalHours - count;
+  const el = document.getElementById('hoursRemaining');
+  if(el) {
+    el.textContent = rem > 0 ? rem : (rem === 0 ? '✓' : 0);
+    el.style.color = rem > 0 ? 'var(--muted)' : rem === 0 ? 'var(--green)' : 'var(--red)';
+  }
 }
 
 // ── Slider
@@ -1290,17 +1644,18 @@ function updateSlider() {
   const pct = ((totalHours - 4) / (70 - 4) * 100).toFixed(1);
   sl.style.setProperty('--pct', pct + '%');
   updateHeroStats();
+  updateAvailCount();
   dayHoursAssigned = {}; // reset so buildDayDist recalculates proportionally
   buildDayDist();
 }
 
 function updateHeroStats() {
-  const psicoH = 2;
-  // At 44h: estudio=28, test=8, repaso=6 (total productive = 42)
-  const ratio = totalHours / 44;
+  const psicoH = psicoHours();
+  const productive = totalHours - psicoH;
+  const ratio = productive / 42;
   const estH  = Math.round(28 * ratio);
   const testH = Math.round(8  * ratio);
-  const repH  = Math.round(6  * ratio);
+  const repH  = Math.max(0, productive - estH - testH);
   document.getElementById('hStatSem').textContent  = totalHours+'h';
   document.getElementById('hStatEst').textContent  = estH+'h';
   document.getElementById('hStatTest').textContent = testH+'h';
@@ -1312,7 +1667,6 @@ function buildDayDist() {
   // Count enabled days and available hours per day (slots)
   const activeDays = DAYS.map((_, di) => di).filter(di => dayConfig[di].on);
   if (!activeDays.length) {
-    document.getElementById('dayDistPanel').style.display = 'none';
     return;
   }
 
@@ -1321,7 +1675,6 @@ function buildDayDist() {
   DAYS.forEach((_, di) => {
     let count = 0;
     HOURS.forEach((_, hi) => {
-      if(di===3 && (hi===10||hi===11)) return;
       if(dayHourEnabled(di, hi)) count++;
     });
     slotsPerDay[di] = count;
@@ -1349,7 +1702,7 @@ function buildDayDist() {
   dayHoursAssigned = newAssigned;
 
   renderDayDist(slotsPerDay);
-  document.getElementById('dayDistPanel').style.display = 'block';
+  // dayDistPanel stays hidden — distribution is automatic, not shown to user
 }
 
 function renderDayDist(slotsPerDay) {
@@ -1359,7 +1712,6 @@ function renderDayDist(slotsPerDay) {
     DAYS.forEach((_, di) => {
       let count = 0;
       HOURS.forEach((_, hi) => {
-        if(di===3 && (hi===10||hi===11)) return;
         if(dayHourEnabled(di, hi)) count++;
       });
       slotsPerDay[di] = count;
@@ -1401,7 +1753,6 @@ function changeDayHours(di, delta) {
   DAYS.forEach((_, d) => {
     let count = 0;
     HOURS.forEach((_, hi) => {
-      if(d===3 && (hi===10||hi===11)) return;
       if(dayHourEnabled(d, hi)) count++;
     });
     slotsPerDay[d] = count;
@@ -1428,79 +1779,79 @@ function updateDistSummary(slotsPerDay) {
 
 // ── Generate timetable
 function generateTimetable() {
-  const assigned = Object.values(dayHoursAssigned).reduce((s, v) => s + v, 0);
-  if (assigned !== totalHours) {
-    if (!confirm(`El total asignado (${assigned}h) no coincide con las horas semanales (${totalHours}h). ¿Generar igualmente con ${assigned}h?`)) return;
-  }
-
-  // Proportions: estudio≈63.6%, test≈18.2%, repaso≈13.6% (28/8/6 out of 42h)
+  const totalPsicoH = psicoHours(); // exactly 1, 2 or 3 fixed blocks per week
   const EST_RATIO  = 28 / 42;
   const TEST_RATIO = 8  / 42;
-  const REP_RATIO  = 6  / 42;
+
+  // Collect all selected slots per day
+  const daySlotMap = {};
+  let totalSelected = 0;
+  DAYS.forEach((_, di) => {
+    const slots = [];
+    for(let hi = 0; hi < 24; hi++) {
+      if(availData[di] && availData[di][hi]) slots.push(hi);
+    }
+    daySlotMap[di] = slots;
+    totalSelected += slots.length;
+  });
+
+  if(totalSelected === 0) {
+    alert('Selecciona al menos una hora en el calendario antes de generar el horario.');
+    return;
+  }
 
   timetableData = {};
   DAYS.forEach((_,di) => { timetableData[di] = {}; });
 
+  // --- Distribute exactly totalPsicoH psico blocks across active days ---
+  // We pick the first slot of the days with most hours (spread evenly)
+  // to assign psico, ensuring exactly totalPsicoH blocks in the whole week.
+  const activeDays = DAYS.map((_,di) => di).filter(di => daySlotMap[di].length > 0);
+  const psicoAssigned = {}; // di -> number of psico blocks for that day
+  activeDays.forEach(di => { psicoAssigned[di] = 0; });
+
+  let psicoLeft = Math.min(totalPsicoH, totalSelected);
+  // Distribute psico blocks: 1 per day starting from days with most hours, round-robin
+  const sortedByHours = [...activeDays].sort((a,b) => daySlotMap[b].length - daySlotMap[a].length);
+  let round = 0;
+  while(psicoLeft > 0) {
+    const di = sortedByHours[round % sortedByHours.length];
+    const maxPsico = daySlotMap[di].length;
+    if(psicoAssigned[di] < maxPsico) {
+      psicoAssigned[di]++;
+      psicoLeft--;
+    }
+    round++;
+    if(round > totalPsicoH * sortedByHours.length + sortedByHours.length) break; // safety
+  }
+
+  // --- Build timetable per day ---
   DAYS.forEach((_, di) => {
-    const dc = dayConfig[di];
-    if(!dc || !dc.on) return;
-    const dayTotal = dayHoursAssigned[di] || 0;
-    if(!dayTotal) return;
-
-    // Gather available slots per period, ordered by hi
-    const slotsByPeriod = { m:[], t:[], n:[] };
-    HOURS.forEach((_, hi) => {
-      if(di===3 && (hi===10||hi===11)) return;
-      if(isBreakSlot(hi)) return;
-      const p = hourPeriod(hi);
-      if(p !== 'break' && dc.turns[p]) slotsByPeriod[p].push(hi);
-    });
-
-    const totalSlots = slotsByPeriod.m.length + slotsByPeriod.t.length + slotsByPeriod.n.length;
-    if(!totalSlots) return;
-
-    // Build contiguous ordered list of slots for this day, proportional per period
-    const daySlots = [];
-    let remaining = dayTotal;
-    const activePeriods = ['m','t','n'].filter(p => dc.turns[p] && slotsByPeriod[p].length > 0);
-    activePeriods.forEach((p, idx) => {
-      const periodSlots = slotsByPeriod[p].length;
-      let take = idx === activePeriods.length - 1
-        ? remaining
-        : Math.round((periodSlots / totalSlots) * dayTotal);
-      take = Math.min(take, periodSlots, remaining);
-      slotsByPeriod[p].slice(0, take).forEach(hi => daySlots.push(hi));
-      remaining -= take;
-    });
-
+    const daySlots = daySlotMap[di];
     const n = daySlots.length;
     if(!n) return;
 
-    // Calculate how many of each tipo for this day
-    const dayEst  = Math.round(n * EST_RATIO);
-    const dayTest = Math.round(n * TEST_RATIO);
-    const dayRep  = Math.max(0, n - dayEst - dayTest);
+    const dayPsico = psicoAssigned[di] || 0;
+    const prodN    = Math.max(0, n - dayPsico);
 
-    // Build a tipo list and interleave evenly using Bresenham-style distribution
-    // e.g. for 7h: [E,E,E,E,T,T,R] → spread evenly → E,E,T,E,E,T,R
+    const dayEst  = Math.round(prodN * EST_RATIO);
+    const dayTest = Math.round(prodN * TEST_RATIO);
+    const dayRep  = Math.max(0, prodN - dayEst - dayTest);
+
     const tipoPool = [
       ...Array(dayEst).fill('estudio'),
       ...Array(dayTest).fill('test'),
       ...Array(dayRep).fill('repaso'),
+      ...Array(dayPsico).fill('psico'),
     ];
 
-    // Interleave: sort so types alternate as evenly as possible
-    // Strategy: assign each slot a "score" based on its type proportion, then sort
     const interleaved = interleaveTypes(tipoPool);
-
     daySlots.forEach((hi, idx) => {
       if(interleaved[idx]) timetableData[di][hi] = interleaved[idx];
     });
-  });
 
-  // Fixed psico jueves 17:00–19:00
-  timetableData[3][10] = 'psico';
-  timetableData[3][11] = 'psico';
+    dayHoursAssigned[di] = n;
+  });
 
   saveHorario();
   renderTimetable();
@@ -1569,12 +1920,7 @@ function renderTimetable() {
 
     DAYS.forEach((_, di) => {
       const td = document.createElement('td');
-      const isPsico = di===3 && (hi===10||hi===11) && (timetableData[3]||{})[hi] === 'psico';
-
-      if(isPsico) {
-        td.className = 'psico-fixed';
-        td.innerHTML = `<div class="cell-block tipo-psico">Psico</div>`;
-      } else if(!dayHourEnabled(di, hi) && !isBreak) {
+      if(!dayHourEnabled(di, hi) && !isBreak) {
         td.className = 'disabled-day';
       } else {
         // Normal cell (including break slots — editable, just starts empty)
@@ -1694,35 +2040,146 @@ function updateDescansoLabel() {
 }
 
 function resetTimetable() {
-  if(!confirm('¿Eliminar todas las actividades de la tabla?')) return;
-  // Wipe all activity data completely
-  timetableData = {};
-  DAYS.forEach((_, di) => { timetableData[di] = {}; });
-  saveHorario();
-  // Keep section visible and re-render blank table
-  document.getElementById('timetableSection').style.display = 'block';
-  renderTimetable();
+  showConfirmDialog('¿Eliminar el horario generado?', function() {
+    timetableData = {};
+    DAYS.forEach((_, di) => { timetableData[di] = {}; });
+    saveHorario();
+    const sec = document.getElementById('timetableSection');
+    if(sec) sec.style.display = 'none';
+  });
 }
 
-// Init horario
-loadHorario();
-buildDaysGrid();
-document.getElementById('hoursSlider').value = totalHours;
-updateSlider();
-if(Object.keys(timetableData).length > 0) {
-  document.getElementById('timetableSection').style.display = 'block';
-  renderTimetable();
+function showConfirmDialog(msg, onOk) {
+  const old = document.getElementById('customConfirm');
+  if(old) old.remove();
+  const dlg = document.createElement('div');
+  dlg.id = 'customConfirm';
+  dlg.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  dlg.innerHTML = `
+    <div style="background:#fff;border-radius:12px;padding:28px 28px 20px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
+      <p style="margin:0 0 20px;font-size:15px;color:#111;line-height:1.4;">${msg}</p>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button id="confirmNo"  style="padding:8px 18px;border-radius:7px;border:1px solid #ddd;background:#f9f9f9;cursor:pointer;font-size:13px;">Cancelar</button>
+        <button id="confirmYes" style="padding:8px 18px;border-radius:7px;border:none;background:#e11d48;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">Eliminar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(dlg);
+  dlg.querySelector('#confirmNo').onclick  = () => dlg.remove();
+  dlg.querySelector('#confirmYes').onclick = () => { dlg.remove(); onOk(); };
+}
+
+function downloadPDF() {
+  const TIPOS_MAP = {estudio:'Estudio',test:'Test',repaso:'Repaso',psico:'Psico'};
+  const TIPO_BG   = {estudio:'#dbeafe',test:'#fef3c7',repaso:'#dcfce7',psico:'#ede9fe'};
+  const TIPO_FG   = {estudio:'#1e40af',test:'#92400e',repaso:'#166534',psico:'#5b21b6'};
+
+  const activeDays = DAYS.map((_,di)=>di).filter(di=>dayConfig[di]&&dayConfig[di].on);
+
+  // Build print HTML
+  let rows = '';
+  HOURS.forEach((hour, hi) => {
+    if(isBreakSlot(hi)) return;
+    let tds = `<td class="hl">${hour}</td>`;
+    activeDays.forEach(di => {
+      const tipo = (timetableData[di]||{})[hi]||'';
+      if(tipo && tipo !== 'descanso' && TIPOS_MAP[tipo]) {
+        tds += `<td><span class="pill t-${tipo}">${TIPOS_MAP[tipo]}</span></td>`;
+      } else {
+        tds += `<td></td>`;
+      }
+    });
+    rows += `<tr>${tds}</tr>`;
+  });
+
+  const heads = activeDays.map(di=>`<th>${DAYS[di]}</th>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Horario semanal · ACRAPOL</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;padding:20px;background:#fff;color:#111}
+  h1{font-size:15px;font-weight:700;margin-bottom:14px;letter-spacing:.5px}
+  table{border-collapse:collapse;width:100%;font-size:11px}
+  th,td{border:1px solid #e5e7eb;padding:4px 6px;text-align:center;vertical-align:middle}
+  th{background:#f3f4f6;font-weight:600;font-size:10px;letter-spacing:.5px}
+  td.hl{text-align:left;color:#9ca3af;font-size:10px;width:44px}
+  .pill{display:inline-block;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap}
+  .t-estudio{background:#dbeafe;color:#1e40af}
+  .t-test   {background:#fef3c7;color:#92400e}
+  .t-repaso {background:#dcfce7;color:#166534}
+  .t-psico  {background:#ede9fe;color:#5b21b6}
+  .legend{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .leg{display:flex;align-items:center;gap:5px;font-size:10px}
+  .leg-dot{width:10px;height:10px;border-radius:3px}
+  @media print{
+    body{padding:10px}
+    @page{size:A4 landscape;margin:1cm}
+  }
+</style>
+</head><body>
+<h1>Tu horario semanal · ACRAPOL</h1>
+<table>
+  <thead><tr><th>Hora</th>${heads}</tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:#dbeafe"></div>Estudio</div>
+  <div class="leg"><div class="leg-dot" style="background:#fef3c7"></div>Test</div>
+  <div class="leg"><div class="leg-dot" style="background:#dcfce7"></div>Repaso</div>
+  <div class="leg"><div class="leg-dot" style="background:#ede9fe"></div>Psicotécnicos</div>
+</div>
+<script>window.addEventListener('load',function(){window.print()});<\/script>
+</body></html>`;
+
+  // Descargar HTML — al abrirlo en el navegador, el script lanza window.print() automáticamente
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'horario-acrapol.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+  // Mostrar aviso
+  const toast = document.getElementById('toast');
+  if(toast) {
+    toast.textContent = 'Abre el archivo descargado en tu navegador para imprimir o guardar como PDF';
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 5000);
+  }
 }
 
 // ══════════════ INIT ══════════════
-const savedPromo = localStorage.getItem('acrapol_promo');
-if (savedPromo) document.getElementById('promoInput').value = savedPromo;
+try {
+  const savedPromo = localStorage.getItem('acrapol_promo');
+  if (savedPromo) { const pi = document.getElementById('promoInput'); if(pi) pi.value = savedPromo; }
+} catch(e) {}
+
+// Init horario
+try {
+  loadHorario();
+  rebuildDayConfig();
+  setPsicoLevel(psicoLevel);
+  buildAvailTable();
+  const sl = document.getElementById('hoursSlider');
+  if(sl) sl.value = totalHours;
+  updateSlider();
+  if(Object.keys(timetableData).length > 0) {
+    const sec = document.getElementById('timetableSection');
+    if(sec) sec.style.display = 'block';
+    renderTimetable();
+  }
+} catch(e) { console.error('Init horario error:', e); }
 
 // Check session
-const savedRole = sessionStorage.getItem('acrapol_role');
-if (savedRole === 'admin') { isAdmin = true; launchApp(); }
-else if (savedRole === 'student') { isAdmin = false; launchApp(); }
-else { showRolePicker(); }
+try {
+  const savedRole = sessionStorage.getItem('acrapol_role');
+  if (savedRole === 'admin') { isAdmin = true; launchApp(); }
+  else if (savedRole === 'student') { isAdmin = false; launchApp(); }
+  else { showRolePicker(); }
+} catch(e) { console.error('Init session error:', e); showRolePicker(); }
 </script>
 </body>
 </html>
