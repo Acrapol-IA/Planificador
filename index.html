@@ -1286,8 +1286,8 @@ function applyWeek() {
 // ══════════════ RECOVERY ══════════════
 function showRecoveryPanel(pending) {
   const futureCount = planificacion.filter(w => w.semana >= currentWeek).length;
-  // Default: distribute over all future weeks
-  recoveryWeeks = futureCount;
+  // Default: 1 week
+  recoveryWeeks = 1;
 
   document.getElementById('recoveryText').textContent =
     `Te incorporas en la Semana ${currentWeek}. Tienes ${pending} bloque(s) de temas previos que recuperar. Elige en cuántas semanas quieres distribuirlos.`;
